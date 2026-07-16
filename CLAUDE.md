@@ -25,6 +25,17 @@ anexa o logotipo do cliente, escolhe a orientação e baixa o PDF na hora.
   versionado no repositório remoto.
 - Um commit por bloco, não um commit gigante.
 
+## Pendência de sincronização
+
+O deploy no Vercel foi feito primeiro, direto pelo conector do ambiente, em um
+projeto isolado chamado `wa-propostas`, sem passar pelo GitHub. Fica pendente:
+
+- Criar o repositório `oalexandrechaves/wa-propostas` no GitHub.
+- Adicionar o remote e fazer o push de todo este código, que já está commitado
+  localmente em commits separados por bloco.
+- Ligar o projeto Vercel `wa-propostas` a esse repositório, para que deploy e
+  repositório fiquem sincronizados nos próximos deploys.
+
 ## Identidade visual
 
 Cores: grafite `#1F1E1E`, preto `#0F0E0E`, vermelho `#E63329`, creme `#F6F1E7`,
