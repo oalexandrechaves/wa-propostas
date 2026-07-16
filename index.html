@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estúdio WA, Gerador de Propostas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,700;1,9..144,900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ==========================================================================
+   BLOCO 1, Tokens, reset e layout base
+   ========================================================================== */
+:root{
+  --grafite:#1F1E1E;
+  --preto:#0F0E0E;
+  --vermelho:#E63329;
+  --creme:#F6F1E7;
+  --texto-claro:#EDE7DC;
+  --texto-fraco:#B8B0A4;
+  --tinta:#17161A;
+  --console-larg:380px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Poppins',system-ui,sans-serif;
+  background:var(--preto);
+  color:var(--texto-claro);
+  overflow:hidden;
+}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none}
+input,textarea,select{font-family:inherit}
+
+/* Estrutura de duas colunas: console fixo, palco flexível */
+#app{
+  display:grid;
+  grid-template-columns:var(--console-larg) 1fr;
+  height:100vh;
+  width:100vw;
+}
+
+/* Palco onde o deck aparece escalado para caber */
+#stage{
+  position:relative;
+  background:
+    radial-gradient(120% 120% at 50% 0%, #171616 0%, var(--preto) 70%);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#stage-inner{
+  position:relative;
+  transform-origin:center center;
+}
+
+/* ==========================================================================
+   Deck e slides, base comum às duas orientações
+   ========================================================================== */
+#deck{
+  --slide-larg:1920px;
+  --slide-alt:1080px;
+  display:flex;
+  flex-direction:column;
+  gap:48px;
+}
+#deck[data-orient="retrato"]{
+  --slide-larg:1080px;
+  --slide-alt:1920px;
+}
+.slide{
+  position:relative;
+  width:var(--slide-larg);
+  height:var(--slide-alt);
+  overflow:hidden;
+  background:var(--grafite);
+  color:var(--texto-claro);
+  flex:0 0 auto;
+}
+.slide[hidden]{display:none}
+
+/* Durante a exportação o deck vai para fora da tela em tamanho natural,
+   sem transform de escala, para o html2canvas capturar limpo. */
+#deck.exportando{
+  position:fixed;
+  left:-99999px;
+  top:0;
+  transform:none !important;
+  gap:0;
+}
+#deck.exportando .slide{margin:0}
+
+/* Monograma de rodapé, presente nos slides escuros */
+.monograma-rodape{
+  position:absolute;
+  bottom:38px;
+  right:46px;
+  width:96px;
+  opacity:.92;
+  z-index:5;
+}
+
+/* ==========================================================================
+   Dispositivo de assinatura, recorte de jornal rasgado
+   ========================================================================== */
+.papel-titulo{
+  position:relative;
+  display:inline-block;
+  filter:drop-shadow(0 24px 40px rgba(0,0,0,.45));
+}
+.papel-titulo .circulo{
+  position:absolute;
+  width:118%;
+  top:-9%;
+  left:14%;
+  z-index:0;
+  pointer-events:none;
+}
+.papel-titulo .papel{
+  position:relative;
+  z-index:1;
+  width:100%;
+  transform:rotate(-4deg);
+}
+.papel-titulo .conteudo{
+  position:absolute;
+  z-index:2;
+  inset:0;
+  transform:rotate(-4deg);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:0 12%;
+}
+.papel-titulo .conteudo h2{
+  font-family:'Fraunces',serif;
+  font-weight:900;
+  color:var(--tinta);
+  line-height:.98;
+}
+.papel-titulo .alfinete{
+  position:absolute;
+  z-index:3;
+  width:14%;
+  top:-4%;
+  left:6%;
+  transform:rotate(-4deg);
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.4));
+}
+
+/* Rótulo utilitário reutilizável */
+.rotulo{
+  font-family:'Poppins',sans-serif;
+  font-weight:600;
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--texto-fraco);
+}
+
+/* Marcador de visto vermelho para listas */
+.lista-vista{list-style:none}
+.lista-vista li{
+  position:relative;
+  padding-left:44px;
+  margin-bottom:18px;
+  line-height:1.4;
+}
+.lista-vista li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.15em;
+  width:26px;
+  height:26px;
+  background:var(--vermelho);
+  border-radius:7px;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/70% no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/70% no-repeat;
+}
+
+/* SLOT: css-slides-fixos */
+
+/* SLOT: css-slides-variaveis */
+
+/* SLOT: css-console */
+
+/* SLOT: css-retrato */
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- SLOT: html-console -->
+  <aside id="console-placeholder"></aside>
+  <main id="stage">
+    <div id="stage-inner">
+      <div id="deck" data-orient="paisagem"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ==========================================================================
+   BLOCO 1, Estado em memória e utilitários
+   ========================================================================== */
+"use strict";
+
+const A = "assets/";
+
+/* Estado único da aplicação, tudo em memória, nada persistido. */
+const state = {
+  orient:"paisagem",
+  ativos:{
+    capa:true, sobre:true, estrutura:true, escopo:true,
+    investimento:true, adicionais:true, condicoes:true, encerramento:true
+  },
+  cliente:{
+    sobrelinha:"Estúdio WA",
+    nome:"",
+    titulo:"",
+    data:"",
+    logo:null
+  },
+  sobre:{
+    titulo:"WA Comunicações",
+    texto:"",
+    itens:[]
+  },
+  estrutura:{
+    titulo:"Estrutura do Estúdio WA",
+    especs:[]
+  },
+  escopo:{
+    titulo:"",
+    itens:[]
+  },
+  investimento:{
+    modo:"planos",
+    titulo:"Investimento",
+    destaque:"",
+    planos:[],
+    unico:{ rotulo:"", valor:"", itens:[] }
+  },
+  adicionais:{
+    titulo:"Serviços adicionais",
+    cards:[]
+  },
+  condicoes:{
+    titulo:"Condições",
+    texto:""
+  },
+  contato:{
+    titulo:"Obrigado",
+    texto:"",
+    linhas:[]
+  }
+};
+
+/* Ordem dos slides e rótulos de interface */
+const ORDEM_SLIDES = [
+  ["capa","Capa"],
+  ["sobre","Sobre"],
+  ["estrutura","Estrutura"],
+  ["escopo","Escopo"],
+  ["investimento","Investimento"],
+  ["adicionais","Adicionais"],
+  ["condicoes","Condições"],
+  ["encerramento","Encerramento"]
+];
+
+/* Mapeamento fixo do portfólio, confirmado pela ordem do PDF original */
+const PORTFOLIO = [
+  ["portfolio-1.jpg","Zezé Di Camargo","PodCast Top TV"],
+  ["portfolio-2.jpg","Regis Tadeu","PodCast Cola Aqui"],
+  ["portfolio-3.jpg","Amado Batista","PodCast Rokast"],
+  ["portfolio-4.jpg","Julio Casares","PodCast Arena ESG"],
+  ["portfolio-5.jpg","Sebastian Soul","PodCast Visão Feminina"],
+  ["portfolio-6.jpg","Geraldo Luiz","PodCast Rokast"]
+];
+
+/* Utilitários */
+function esc(s){
+  return String(s==null?"":s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+function nl2br(s){ return esc(s).replace(/\n/g,"<br>"); }
+function linhas(s){ return String(s||"").split("\n").map(l=>l.trim()).filter(Boolean); }
+function kebab(s){
+  return String(s||"proposta")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "proposta";
+}
+function dataArquivo(){
+  const d=new Date();
+  const p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+function el(html){
+  const t=document.createElement("template");
+  t.innerHTML=html.trim();
+  return t.content.firstElementChild;
+}
+
+/* ==========================================================================
+   Render do deck a partir do estado
+   ========================================================================== */
+const construtores = {}; /* preenchido pelos blocos de slides */
+
+function render(){
+  const deck=document.getElementById("deck");
+  deck.dataset.orient=state.orient;
+  deck.innerHTML="";
+  for(const [chave] of ORDEM_SLIDES){
+    const build=construtores[chave];
+    if(!build) continue;
+    const slide=build();
+    slide.classList.add("slide");
+    slide.dataset.slide=chave;
+    if(!state.ativos[chave]) slide.hidden=true;
+    deck.appendChild(slide);
+  }
+  ajustarEscala();
+  if(typeof atualizarContador==="function") atualizarContador();
+}
+
+/* Escala o deck para caber no palco sem transformar ancestral na exportação */
+function ajustarEscala(){
+  const stage=document.getElementById("stage");
+  const inner=document.getElementById("stage-inner");
+  const deck=document.getElementById("deck");
+  if(deck.classList.contains("exportando")) return;
+  const larg=state.orient==="retrato"?1080:1920;
+  const disp=stage.clientWidth-80;
+  const escala=Math.min(disp/larg, 0.85);
+  inner.style.transform="scale("+escala+")";
+}
+window.addEventListener("resize", ajustarEscala);
+
+/* Slides fixos e variáveis registram seus construtores nos blocos seguintes.
+   O console e a exportação são ligados nos blocos 4 e 6. */
+document.addEventListener("DOMContentLoaded", ()=>{
+  if(typeof montarConsole==="function") montarConsole();
+  render();
+});
+</script>
+</body>
+</html>
