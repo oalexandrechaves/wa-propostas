@@ -3,3 +3,4 @@ assets-wa-estudio.zip
 *.log
 node_modules/
 .vercel
+.claude/
