@@ -589,15 +589,174 @@ input,textarea,select{font-family:inherit}
 }
 .s-condicoes .corpo p:last-child{margin-bottom:0}
 
-/* SLOT: css-console */
+/* ==========================================================================
+   BLOCO 4, Console administrativo
+   ========================================================================== */
+#console{
+  background:var(--preto);
+  border-right:1px solid #000;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
+  min-width:0;
+}
+#console .top{
+  padding:20px 20px 16px;
+  border-bottom:1px solid #211f1f;
+  flex:0 0 auto;
+}
+#console .marca-console{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+#console .marca-console img{width:26px}
+#console .marca-console b{
+  font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--texto-claro);
+}
+#console .marca-console small{
+  font-size:11px;color:var(--texto-fraco);letter-spacing:.1em;text-transform:uppercase;
+}
+.modelos{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.modelos button{
+  background:var(--grafite);
+  color:var(--texto-claro);
+  border:1px solid #2c2a2a;
+  border-radius:10px;
+  padding:10px 6px;
+  font-size:11px;
+  font-weight:600;
+  line-height:1.2;
+  transition:border-color .15s, background .15s;
+}
+.modelos button:hover{border-color:var(--vermelho);background:#242222}
+.orient{display:flex;gap:8px}
+.orient label{
+  flex:1;
+  text-align:center;
+  padding:9px;
+  border:1px solid #2c2a2a;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--texto-fraco);
+  cursor:pointer;
+  position:relative;
+}
+.orient input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.orient label:has(input:checked){
+  border-color:var(--vermelho);
+  color:var(--texto-claro);
+  background:rgba(230,51,41,.12);
+}
+
+/* Corpo com scroll */
+#console .corpo{flex:1 1 auto;overflow-y:auto;padding:8px 0}
+#console .corpo::-webkit-scrollbar{width:10px}
+#console .corpo::-webkit-scrollbar-thumb{background:#2a2828;border-radius:8px}
+
+/* Acordeão */
+.acc{border-bottom:1px solid #1c1b1b}
+.acc-head{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 20px;cursor:pointer;user-select:none;
+}
+.acc-head:hover{background:#161515}
+.acc-arrow{color:var(--texto-fraco);font-size:11px;transition:transform .15s;width:12px}
+.acc[data-open] .acc-arrow{transform:rotate(90deg)}
+.acc-title{
+  flex:1;font-weight:600;font-size:13px;color:var(--texto-claro);
+  letter-spacing:.02em;
+}
+.acc-body{display:none;padding:6px 20px 20px}
+.acc[data-open] .acc-body{display:block}
+
+/* Interruptor do slide */
+.switch{position:relative;display:inline-flex;width:38px;height:22px;flex:0 0 auto}
+.switch input{position:absolute;opacity:0;inset:0;cursor:pointer;z-index:2}
+.switch .track{
+  position:absolute;inset:0;background:#2c2a2a;border-radius:22px;transition:background .15s;
+}
+.switch .track::after{
+  content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;
+  background:var(--texto-fraco);border-radius:50%;transition:transform .15s, background .15s;
+}
+.switch input:checked + .track{background:var(--vermelho)}
+.switch input:checked + .track::after{transform:translateX(16px);background:#fff}
+
+/* Campos */
+.f{display:block;margin-bottom:14px}
+.f > span, .f-label{
+  display:block;font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--texto-fraco);margin-bottom:6px;
+}
+.f input, .f textarea, .f select{
+  width:100%;background:var(--grafite);color:var(--texto-claro);
+  border:1px solid #2c2a2a;border-radius:9px;padding:10px 12px;font-size:13px;
+  transition:border-color .15s;resize:vertical;
+}
+.f input:focus, .f textarea:focus{outline:none;border-color:var(--vermelho)}
+.f textarea{line-height:1.4;min-height:66px}
+
+/* Blocos repetíveis, planos, adicionais, grupos */
+.bloco{
+  background:#151414;border:1px solid #232121;border-radius:12px;
+  padding:14px;margin-bottom:12px;
+}
+.bloco-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.bloco-top strong{font-size:12px;color:var(--texto-claro);letter-spacing:.04em}
+.mini-rem{
+  background:transparent;color:var(--vermelho);font-size:11px;font-weight:600;
+  border:1px solid #3a2626;border-radius:7px;padding:4px 8px;
+}
+.mini-rem:hover{background:rgba(230,51,41,.12)}
+.btn-add{
+  width:100%;background:transparent;color:var(--texto-claro);
+  border:1px dashed #3a3838;border-radius:10px;padding:10px;font-size:12px;font-weight:600;
+}
+.btn-add:hover{border-color:var(--vermelho);color:var(--vermelho)}
+
+/* Modo de investimento */
+.inv-modo{display:flex;gap:8px;margin-bottom:14px}
+.inv-modo label{
+  flex:1;text-align:center;padding:9px;border:1px solid #2c2a2a;border-radius:9px;
+  font-size:12px;font-weight:600;color:var(--texto-fraco);cursor:pointer;position:relative;
+}
+.inv-modo input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.inv-modo label:has(input:checked){
+  border-color:var(--vermelho);color:var(--texto-claro);background:rgba(230,51,41,.12);
+}
+
+/* Logotipo do cliente */
+.logo-prev{
+  display:flex;align-items:center;gap:12px;
+  background:var(--creme);border-radius:10px;padding:10px;
+}
+.logo-prev img{max-width:90px;max-height:56px;object-fit:contain}
+.logo-prev button{
+  margin-left:auto;background:transparent;color:var(--vermelho);
+  border:1px solid #d8b0ac;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:600;
+}
+.f input[type=file]{padding:8px;font-size:12px}
+
+/* Rodapé do console */
+.rodape-console{
+  flex:0 0 auto;padding:16px 20px;border-top:1px solid #211f1f;
+  display:flex;align-items:center;gap:14px;background:var(--preto);
+}
+.btn-pdf{
+  flex:1;background:var(--vermelho);color:#fff;font-weight:700;font-size:14px;
+  border-radius:11px;padding:14px;letter-spacing:.02em;transition:filter .15s;
+}
+.btn-pdf:hover{filter:brightness(1.08)}
+.btn-pdf:disabled{opacity:.7;cursor:progress}
+.contador{font-size:12px;color:var(--texto-fraco);white-space:nowrap}
+.contador b{color:var(--texto-claro)}
 
 /* SLOT: css-retrato */
 </style>
 </head>
 <body>
 <div id="app">
-  <!-- SLOT: html-console -->
-  <aside id="console-placeholder"></aside>
+  <aside id="console"></aside>
   <main id="stage">
     <div id="stage-inner">
       <div id="deck" data-orient="paisagem"></div>
@@ -865,7 +1024,7 @@ construtores.investimento = function(){
   } else {
     const cards = s.planos.map(p=>{
       const desc = (p.descricao||[]).map(d=>`<div>${esc(d)}</div>`).join("");
-      const rod = p.rodape ? `<div class="rodape">
+      const rod = (p.rodape && p.rodape.valor) ? `<div class="rodape">
         <span class="rotulo">${esc(p.rodape.rotulo)}</span>
         ${(p.rodape.linhas||[]).map(l=>`<div class="linha">${esc(l)}</div>`).join("")}
         <div class="valor-rod">${esc(p.rodape.valor)}` +
@@ -915,7 +1074,272 @@ construtores.condicoes = function(){
   </section>`);
 };
 
-/* O console e a exportação são ligados nos blocos 4 e 6. */
+/* ==========================================================================
+   BLOCO 4, Console administrativo e ligação com o estado
+   ========================================================================== */
+
+const painelAberto = { capa:true };
+let consoleLigado = false;
+
+/* Grava um valor no estado seguindo um caminho pontuado, criando os níveis */
+function setPath(obj, path, val){
+  const parts=path.split(".");
+  let o=obj;
+  for(let i=0;i<parts.length-1;i++){
+    const k=parts[i];
+    if(o[k]==null) o[k] = /^\d+$/.test(parts[i+1]) ? [] : {};
+    o=o[k];
+  }
+  o[parts[parts.length-1]]=val;
+}
+
+/* Geradores de campo */
+function fCampo(path,label,valor,tipo){
+  return `<label class="f"><span>${label}</span>` +
+    `<input type="${tipo||'text'}" data-path="${path}" value="${esc(valor||'')}"></label>`;
+}
+function fArea(path,label,valor,lista){
+  const v = lista ? (valor||[]).join("\n") : (valor||"");
+  return `<label class="f"><span>${label}</span>` +
+    `<textarea data-path="${path}"${lista?' data-list':''} rows="4">${esc(v)}</textarea></label>`;
+}
+
+function especEditor(g,i){
+  return `<div class="bloco">
+    <div class="bloco-top"><strong>Grupo ${i+1}</strong>
+      <button class="mini-rem" data-rem-espec="${i}">Remover</button></div>
+    ${fCampo(`estrutura.especs.${i}.rotulo`,"Rótulo",g.rotulo)}
+    ${fArea(`estrutura.especs.${i}.texto`,"Texto",g.texto)}
+  </div>`;
+}
+function planoEditor(p,i){
+  const r=p.rodape||{};
+  return `<div class="bloco">
+    <div class="bloco-top"><strong>Plano ${i+1}</strong>
+      <button class="mini-rem" data-rem-plano="${i}">Remover</button></div>
+    ${fCampo(`investimento.planos.${i}.nome`,"Nome do plano",p.nome)}
+    ${fArea(`investimento.planos.${i}.descricao`,"Descrição, uma linha por item",p.descricao,true)}
+    ${fCampo(`investimento.planos.${i}.valor`,"Valor principal",p.valor)}
+    ${fCampo(`investimento.planos.${i}.unitario`,"Valor unitário (com sufixo)",p.unitario)}
+    ${fCampo(`investimento.planos.${i}.rodape.rotulo`,"Rodapé, rótulo",r.rotulo)}
+    ${fArea(`investimento.planos.${i}.rodape.linhas`,"Rodapé, linhas",r.linhas,true)}
+    ${fCampo(`investimento.planos.${i}.rodape.valor`,"Rodapé, valor",r.valor)}
+    ${fCampo(`investimento.planos.${i}.rodape.unitario`,"Rodapé, sufixo",r.unitario)}
+  </div>`;
+}
+function adicEditor(c,i){
+  return `<div class="bloco">
+    <div class="bloco-top"><strong>Adicional ${i+1}</strong>
+      <button class="mini-rem" data-rem-adic="${i}">Remover</button></div>
+    ${fCampo(`adicionais.cards.${i}.nome`,"Nome",c.nome)}
+    ${fArea(`adicionais.cards.${i}.itens`,"Itens ou descrição, uma linha por item",c.itens,true)}
+    ${fCampo(`adicionais.cards.${i}.valor`,"Valor",c.valor)}
+  </div>`;
+}
+
+/* Cabeçalho de seção com o interruptor do slide */
+function secao(chave,titulo,corpo){
+  const aberto = painelAberto[chave] ? " data-open" : "";
+  const on = state.ativos[chave] ? " checked" : "";
+  return `<section class="acc" data-sec="${chave}"${aberto}>
+    <header class="acc-head">
+      <span class="acc-arrow">&#9656;</span>
+      <span class="acc-title">${titulo}</span>
+      <label class="switch" title="Ligar ou desligar este slide">
+        <input type="checkbox" data-toggle="${chave}"${on}>
+        <span class="track"></span>
+      </label>
+    </header>
+    <div class="acc-body">${corpo}</div>
+  </section>`;
+}
+
+/* Monta o corpo do console a partir do estado */
+function painelHTML(){
+  const c=state.cliente;
+  const logoCampo = c.logo
+    ? `<div class="f"><span class="f-label">Logotipo do cliente</span>
+        <div class="logo-prev"><img src="${c.logo}" alt="Logotipo do cliente">
+          <button data-rem-logo>Remover</button></div></div>`
+    : `<label class="f"><span>Logotipo do cliente</span>
+        <input type="file" accept="image/*" id="logo-input"></label>`;
+
+  const secCliente = secao("capa","Cliente",
+    fCampo("cliente.sobrelinha","Sobrelinha",c.sobrelinha) +
+    fCampo("cliente.nome","Nome do cliente",c.nome) +
+    fCampo("cliente.titulo","Título da proposta",c.titulo) +
+    fCampo("cliente.data","Data",c.data) +
+    logoCampo);
+
+  const secSobre = secao("sobre","Sobre",
+    fCampo("sobre.titulo","Título",state.sobre.titulo) +
+    fArea("sobre.texto","Texto de apresentação",state.sobre.texto) +
+    fArea("sobre.itens","Lista, uma linha por item",state.sobre.itens,true));
+
+  const secEstrutura = secao("estrutura","Estrutura",
+    fCampo("estrutura.titulo","Título",state.estrutura.titulo) +
+    state.estrutura.especs.map(especEditor).join("") +
+    `<button class="btn-add" data-add-espec>Adicionar grupo</button>`);
+
+  const secEscopo = secao("escopo","Escopo",
+    fCampo("escopo.titulo","Título",state.escopo.titulo) +
+    fArea("escopo.itens","Itens inclusos, uma linha por item",state.escopo.itens,true));
+
+  const inv=state.investimento;
+  let invCorpo =
+    fCampo("investimento.titulo","Título",inv.titulo) +
+    fCampo("investimento.destaque","Palavra de destaque (itálico)",inv.destaque) +
+    `<div class="inv-modo">
+      <label><input type="radio" name="inv-modo" value="planos"${inv.modo==="planos"?" checked":""}> Planos</label>
+      <label><input type="radio" name="inv-modo" value="unico"${inv.modo==="unico"?" checked":""}> Valor único</label>
+    </div>`;
+  if(inv.modo==="unico"){
+    invCorpo +=
+      fCampo("investimento.unico.rotulo","Rótulo",inv.unico.rotulo) +
+      fCampo("investimento.unico.valor","Valor",inv.unico.valor) +
+      fArea("investimento.unico.itens","Itens inclusos, uma linha por item",inv.unico.itens,true);
+  } else {
+    invCorpo += inv.planos.map(planoEditor).join("") +
+      `<button class="btn-add" data-add-plano>Adicionar plano</button>`;
+  }
+  const secInvest = secao("investimento","Investimento",invCorpo);
+
+  const secAdic = secao("adicionais","Adicionais",
+    fCampo("adicionais.titulo","Título",state.adicionais.titulo) +
+    state.adicionais.cards.map(adicEditor).join("") +
+    `<button class="btn-add" data-add-adic>Adicionar adicional</button>`);
+
+  const secCond = secao("condicoes","Condições",
+    fCampo("condicoes.titulo","Título",state.condicoes.titulo) +
+    fArea("condicoes.texto","Texto, um parágrafo por linha",state.condicoes.texto));
+
+  const secContato = secao("encerramento","Contato",
+    fCampo("contato.titulo","Título",state.contato.titulo) +
+    fArea("contato.texto","Texto de encerramento",state.contato.texto) +
+    fArea("contato.linhas","Contato, uma linha por item",state.contato.linhas,true));
+
+  return `
+    <div class="top">
+      <div class="marca-console">
+        <img src="${A}monograma.png" alt="WA">
+        <div><b>Propostas WA</b><br><small>Estúdio WA</small></div>
+      </div>
+      <div class="modelos">
+        <button data-modelo="A">PodCast recorrente</button>
+        <button data-modelo="B">Pacote de horas</button>
+        <button data-modelo="C">Pacote intensivo</button>
+      </div>
+      <div class="orient">
+        <label><input type="radio" name="orient" value="paisagem"${state.orient==="paisagem"?" checked":""}> Paisagem</label>
+        <label><input type="radio" name="orient" value="retrato"${state.orient==="retrato"?" checked":""}> Retrato</label>
+      </div>
+    </div>
+    <div class="corpo">
+      ${secCliente}${secSobre}${secEstrutura}${secEscopo}
+      ${secInvest}${secAdic}${secCond}${secContato}
+    </div>
+    <div class="rodape-console">
+      <button id="btn-pdf" class="btn-pdf">Baixar PDF</button>
+      <span id="contador" class="contador"></span>
+    </div>`;
+}
+
+function montarConsole(){
+  const cons=document.getElementById("console");
+  cons.innerHTML=painelHTML();
+  atualizarContador();
+  if(!consoleLigado){ ligarConsole(cons); consoleLigado=true; }
+}
+function rebuildConsole(){ montarConsole(); }
+
+function atualizarContador(){
+  const n=Object.values(state.ativos).filter(Boolean).length;
+  const c=document.getElementById("contador");
+  if(c) c.innerHTML=`<b>${n}</b> de 8 slides ativos`;
+}
+
+/* Liga os ouvintes uma única vez, por delegação no contêiner do console */
+function ligarConsole(cons){
+  cons.addEventListener("input", e=>{
+    const t=e.target;
+    if(!t.dataset || !t.dataset.path) return;
+    const val = (t.dataset.list!=null) ? linhas(t.value) : t.value;
+    setPath(state, t.dataset.path, val);
+    render();
+  });
+
+  cons.addEventListener("change", e=>{
+    const t=e.target;
+    if(t.dataset && t.dataset.toggle!=null){
+      state.ativos[t.dataset.toggle]=t.checked;
+      render();
+      return;
+    }
+    if(t.name==="orient"){
+      state.orient=t.value;
+      render();
+      return;
+    }
+    if(t.name==="inv-modo"){
+      state.investimento.modo=t.value;
+      render(); rebuildConsole();
+      return;
+    }
+    if(t.id==="logo-input" && t.files && t.files[0]){
+      const fr=new FileReader();
+      fr.onload=()=>{ state.cliente.logo=fr.result; render(); rebuildConsole(); };
+      fr.readAsDataURL(t.files[0]);
+    }
+  });
+
+  cons.addEventListener("click", e=>{
+    const t=e.target;
+
+    if(t.closest(".switch")) return; /* tratado pelo change */
+
+    const cab=t.closest(".acc-head");
+    if(cab){
+      const sec=cab.closest(".acc");
+      const chave=sec.dataset.sec;
+      const abrir=!sec.hasAttribute("data-open");
+      if(abrir) sec.setAttribute("data-open",""); else sec.removeAttribute("data-open");
+      painelAberto[chave]=abrir;
+      return;
+    }
+
+    if(t.dataset.modelo){
+      if(typeof aplicarModelo==="function"){ aplicarModelo(t.dataset.modelo); render(); rebuildConsole(); }
+      return;
+    }
+    if(t.hasAttribute("data-rem-logo")){ state.cliente.logo=null; render(); rebuildConsole(); return; }
+
+    if(t.hasAttribute("data-add-espec")){
+      state.estrutura.especs.push({rotulo:"",texto:""}); rebuildConsole(); return;
+    }
+    if(t.dataset.remEspec!=null){
+      state.estrutura.especs.splice(+t.dataset.remEspec,1); render(); rebuildConsole(); return;
+    }
+    if(t.hasAttribute("data-add-plano")){
+      state.investimento.planos.push({nome:"",descricao:[],valor:"",unitario:"",rodape:null});
+      rebuildConsole(); return;
+    }
+    if(t.dataset.remPlano!=null){
+      state.investimento.planos.splice(+t.dataset.remPlano,1); render(); rebuildConsole(); return;
+    }
+    if(t.hasAttribute("data-add-adic")){
+      state.adicionais.cards.push({nome:"",itens:[],valor:""}); rebuildConsole(); return;
+    }
+    if(t.dataset.remAdic!=null){
+      state.adicionais.cards.splice(+t.dataset.remAdic,1); render(); rebuildConsole(); return;
+    }
+    if(t.id==="btn-pdf" || t.closest("#btn-pdf")){
+      if(typeof exportarPDF==="function") exportarPDF();
+      return;
+    }
+  });
+}
+
+/* A exportação é ligada no bloco 6, os modelos no bloco 7. */
 document.addEventListener("DOMContentLoaded", ()=>{
   if(typeof montarConsole==="function") montarConsole();
   render();
