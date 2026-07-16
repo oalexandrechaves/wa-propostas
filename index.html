@@ -1478,7 +1478,160 @@ async function exportarPDF(){
   }
 }
 
-/* Os modelos prontos são ligados no bloco 7. */
+/* ==========================================================================
+   BLOCO 7, Modelos prontos, as três propostas reais do estúdio
+   ========================================================================== */
+
+function dataBR(){
+  const d=new Date();
+  const p=n=>String(n).padStart(2,"0");
+  return p(d.getDate())+"/"+p(d.getMonth()+1)+"/"+d.getFullYear();
+}
+
+/* Conteúdo comum aos slides fixos e editáveis */
+function baseSobre(){
+  return {
+    titulo:"WA Comunicações",
+    texto:"O Estúdio WA é a estrutura de podcast e vídeo da WA Comunicações. "+
+      "Unimos ambiente profissional, operação técnica e edição para transformar "+
+      "conversas em conteúdo pronto para publicar.",
+    itens:[
+      "Estúdio equipado para gravação de áudio e vídeo",
+      "Operação técnica durante toda a gravação",
+      "Edição e cortes prontos para as redes sociais",
+      "Atendimento próximo do início ao fim"
+    ]
+  };
+}
+function baseEstrutura(){
+  return {
+    titulo:"Estrutura do Estúdio WA",
+    especs:[
+      {rotulo:"CAPTAÇÃO", texto:"Câmeras em Full HD, iluminação profissional e cenário tratado."},
+      {rotulo:"ÁUDIO", texto:"Microfones dedicados por participante e mesa de som operada ao vivo."},
+      {rotulo:"CAPACIDADE", texto:"Até quatro participantes com conforto e acústica controlada."},
+      {rotulo:"ENTREGA", texto:"Episódio editado e cortes verticais prontos para publicação."}
+    ]
+  };
+}
+function baseContato(){
+  return {
+    titulo:"Obrigado",
+    texto:"Vamos gravar juntos. Fale com a equipe do Estúdio WA para agendar a sua proposta.",
+    linhas:["WhatsApp (00) 00000, 0000","contato@estudiowa.com.br","@estudiowa"]
+  };
+}
+
+function aplicarModelo(letra){
+  /* Mantém nome e logotipo do cliente, que são específicos de cada cliente */
+  state.cliente.sobrelinha="Estúdio WA";
+  state.cliente.data=dataBR();
+  state.sobre=baseSobre();
+  state.estrutura=baseEstrutura();
+  state.contato=baseContato();
+
+  if(letra==="A"){
+    state.cliente.titulo="Proposta de PodCast";
+    state.ativos={capa:true,sobre:true,estrutura:true,escopo:false,
+      investimento:true,adicionais:true,condicoes:false,encerramento:true};
+    state.escopo={titulo:"",itens:[]};
+    const rodape={rotulo:"CORTES",linhas:["8 Cortes por episódio"],
+      valor:"R$ 140,00",unitario:"(por episódio)"};
+    const recorrente=["4 Episódios mensais","1h00 de gravação"];
+    state.investimento={
+      modo:"planos",
+      titulo:"Investimento",
+      destaque:"PodCast",
+      unico:{rotulo:"",valor:"",itens:[]},
+      planos:[
+        {nome:"Anual",descricao:recorrente,valor:"R$ 1.588,00",
+          unitario:"R$ 397,00 (por episódio)",rodape:{...rodape}},
+        {nome:"Semestral",descricao:recorrente,valor:"R$ 1.708,00",
+          unitario:"R$ 427,00 (por episódio)",rodape:{...rodape}},
+        {nome:"Trimestral",descricao:recorrente,valor:"R$ 1.828,00",
+          unitario:"R$ 457,00 (por episódio)",rodape:{...rodape}},
+        {nome:"Mensal",descricao:recorrente,valor:"R$ 1.988,00",
+          unitario:"R$ 497,00 (por episódio)",rodape:{...rodape}},
+        {nome:"Avulso",descricao:["1 Episódio","1h00 de gravação"],valor:"R$ 597,00",
+          unitario:"",rodape:{...rodape}}
+      ]
+    };
+    state.adicionais={
+      titulo:"Serviços adicionais",
+      cards:[{
+        nome:"Identidade Visual",
+        valor:"R$ 1.850,00",
+        itens:["Pagamento único","Logotipo","Submarca","Ícone","Tipografia",
+          "Paleta de cores","Capas destaques","Configuração dos perfis",
+          "Manual da marca","Link de contato e redes","Vinheta","Arte thumbnail",
+          "GCs","QR Codes","2 canecas"]
+      }]
+    };
+    state.condicoes={titulo:"Condições",texto:""};
+
+  } else if(letra==="B"){
+    state.cliente.titulo="Proposta de Pacote de Horas";
+    state.ativos={capa:true,sobre:true,estrutura:true,escopo:true,
+      investimento:true,adicionais:false,condicoes:true,encerramento:true};
+    const itensEscopo=[
+      "26 horas de utilização do WA Estúdio",
+      "Utilização flexível conforme a necessidade da equipe",
+      "Estrutura completa de gravação",
+      "Operação técnica durante toda a utilização"
+    ];
+    state.escopo={titulo:"Pacote Personalizado de 26 Horas de Estúdio",itens:itensEscopo};
+    state.investimento={
+      modo:"unico",
+      titulo:"Investimento",
+      destaque:"",
+      planos:[],
+      unico:{rotulo:"Pacote de 26 horas",valor:"R$ 9.534,00",itens:itensEscopo}
+    };
+    state.adicionais={titulo:"Serviços adicionais",cards:[]};
+    state.condicoes={
+      titulo:"Condições",
+      texto:"As 26 horas podem ser usadas ao longo de 12 meses a partir da contratação.\n"+
+        "O pagamento acompanha a utilização, com boleto emitido a cada agendamento e "+
+        "quitação até um dia antes da gravação.\n"+
+        "O pagamento das horas agendadas precisa ocorrer antes da gravação, não sendo "+
+        "possível postergar para o mês seguinte."
+    };
+
+  } else if(letra==="C"){
+    state.cliente.titulo="Proposta de Pacote Intensivo";
+    state.ativos={capa:true,sobre:true,estrutura:true,escopo:true,
+      investimento:true,adicionais:true,condicoes:false,encerramento:true};
+    state.escopo={
+      titulo:"Pacote Intensivo de Produção de Podcast",
+      itens:[
+        "10 horas de estúdio em 2 diárias de 5 horas",
+        "Gravação de 3 episódios por dia, 6 no total",
+        "Cada episódio com aproximadamente 1 hora",
+        "Operador de mesa",
+        "Suporte técnico",
+        "Edição completa dos 6 episódios",
+        "De 2 a 5 cortes por episódio para redes sociais"
+      ]
+    };
+    state.investimento={
+      modo:"unico",
+      titulo:"Investimento",
+      destaque:"",
+      planos:[],
+      unico:{rotulo:"Pacote intensivo",valor:"R$ 2.850,00",
+        itens:["10 horas de estúdio","6 episódios gravados","Edição completa",
+          "Cortes para redes sociais"]}
+    };
+    state.adicionais={
+      titulo:"Serviços adicionais",
+      cards:[
+        {nome:"Pacote de Vinhetas e Identidade Visual",itens:[],valor:"R$ 380,00"},
+        {nome:"Maquiagem Profissional",itens:[],valor:"R$ 250,00"}
+      ]
+    };
+    state.condicoes={titulo:"Condições",texto:""};
+  }
+}
 document.addEventListener("DOMContentLoaded", ()=>{
   if(typeof montarConsole==="function") montarConsole();
   render();
