@@ -1445,6 +1445,8 @@ async function exportarPDF(){
   try{
     /* As fontes precisam estar carregadas ou o html2canvas usa o fallback */
     await document.fonts.ready;
+    /* Zera o transform do ancestral, o html2canvas não lida com ele */
+    document.getElementById("stage-inner").style.transform="none";
     deck.classList.add("exportando");
 
     const { jsPDF }=window.jspdf;
