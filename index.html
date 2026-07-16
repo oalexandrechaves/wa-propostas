@@ -751,7 +751,94 @@ input,textarea,select{font-family:inherit}
 .contador{font-size:12px;color:var(--texto-fraco);white-space:nowrap}
 .contador b{color:var(--texto-claro)}
 
-/* SLOT: css-retrato */
+/* ==========================================================================
+   BLOCO 5, Variação de retrato, 1080x1920
+   As mesmas marcações, só o layout muda. Escala tipográfica sobe cerca de 15%.
+   ========================================================================== */
+/* ---- Capa, foto vai para a faixa superior ----------------------------- */
+#deck[data-orient="retrato"] .s-capa .foto{
+  width:100%;height:42%;top:0;left:0;right:auto;
+}
+#deck[data-orient="retrato"] .s-capa .painel{
+  width:100%;height:60%;top:auto;bottom:0;padding:80px 90px;justify-content:center;
+}
+#deck[data-orient="retrato"] .s-capa .divisor{
+  top:42%;left:50%;height:auto;width:130%;
+  transform:translate(-50%,-50%) rotate(0deg);
+}
+#deck[data-orient="retrato"] .s-capa .logo-wa{width:250px}
+#deck[data-orient="retrato"] .s-capa .nome-cliente{font-size:82px}
+#deck[data-orient="retrato"] .s-capa .titulo-proposta{font-size:32px;max-width:100%}
+#deck[data-orient="retrato"] .s-capa .data{font-size:20px}
+#deck[data-orient="retrato"] .s-capa .selo-cliente{right:60px;bottom:60px;width:240px;height:150px}
+
+/* ---- Sobre, coluna única, portfólio 2x3 ------------------------------- */
+#deck[data-orient="retrato"] .s-sobre{
+  grid-template-columns:1fr;
+  grid-template-rows:auto auto auto;
+  gap:48px;
+  padding:90px;
+}
+#deck[data-orient="retrato"] .s-sobre .papel-titulo{width:620px}
+#deck[data-orient="retrato"] .s-sobre .papel-titulo .conteudo h2{font-size:68px}
+#deck[data-orient="retrato"] .s-sobre .apresentacao p{font-size:27px}
+#deck[data-orient="retrato"] .s-sobre .lista-vista{font-size:24px}
+#deck[data-orient="retrato"] .s-sobre .portfolio{grid-template-columns:1fr 1fr}
+#deck[data-orient="retrato"] .s-sobre .cartao-port img{height:210px}
+#deck[data-orient="retrato"] .s-sobre .cartao-port .nome{font-size:20px}
+#deck[data-orient="retrato"] .s-sobre .cartao-port .prog{font-size:14px}
+
+/* ---- Estrutura, empilhada --------------------------------------------- */
+#deck[data-orient="retrato"] .s-estrutura{
+  grid-template-columns:1fr;
+  align-content:start;
+  gap:52px;
+  padding:90px;
+}
+#deck[data-orient="retrato"] .s-estrutura h2{font-size:76px}
+#deck[data-orient="retrato"] .s-estrutura .grupo p{font-size:24px}
+#deck[data-orient="retrato"] .s-estrutura .colagem{grid-auto-rows:280px}
+
+/* ---- Escopo, lista em coluna única ------------------------------------ */
+#deck[data-orient="retrato"] .s-escopo{padding:90px}
+#deck[data-orient="retrato"] .s-escopo .papel-titulo{width:620px}
+#deck[data-orient="retrato"] .s-escopo .papel-titulo .conteudo h2{font-size:62px}
+#deck[data-orient="retrato"] .s-escopo .lista-vista{columns:1;font-size:28px}
+
+/* ---- Investimento, cards empilham em duas colunas --------------------- */
+#deck[data-orient="retrato"] .s-investimento{padding:80px 70px;gap:50px}
+#deck[data-orient="retrato"] .titulo-inv{font-size:72px}
+#deck[data-orient="retrato"] .cards-planos{flex-wrap:wrap;flex:0 0 auto}
+#deck[data-orient="retrato"] .card-plano{
+  flex:1 1 calc(50% - 10px);
+  min-width:calc(50% - 10px);
+}
+#deck[data-orient="retrato"] .card-plano .nome{font-size:34px}
+#deck[data-orient="retrato"] .card-plano .descricao{font-size:19px}
+#deck[data-orient="retrato"] .card-plano .valor{font-size:40px}
+#deck[data-orient="retrato"] .card-unico{grid-template-columns:1fr;gap:36px;padding:60px}
+#deck[data-orient="retrato"] .card-unico .valor-grande{font-size:96px}
+#deck[data-orient="retrato"] .card-unico .inclusos li{font-size:25px}
+
+/* ---- Adicionais, coluna única ----------------------------------------- */
+#deck[data-orient="retrato"] .s-adicionais{padding:90px;gap:44px}
+#deck[data-orient="retrato"] .s-adicionais h2{font-size:70px}
+#deck[data-orient="retrato"] .cards-adic{grid-template-columns:1fr;gap:22px}
+#deck[data-orient="retrato"] .card-adic .nome{font-size:32px}
+#deck[data-orient="retrato"] .card-adic .desc{font-size:19px}
+#deck[data-orient="retrato"] .card-adic .valor{font-size:36px}
+
+/* ---- Condições -------------------------------------------------------- */
+#deck[data-orient="retrato"] .s-condicoes{padding:100px 90px}
+#deck[data-orient="retrato"] .s-condicoes h2{font-size:72px}
+#deck[data-orient="retrato"] .s-condicoes .corpo p{font-size:29px;max-width:100%}
+
+/* ---- Encerramento ----------------------------------------------------- */
+#deck[data-orient="retrato"] .s-encerramento .papel-titulo{width:640px}
+#deck[data-orient="retrato"] .s-encerramento .papel-titulo .conteudo h2{font-size:86px}
+#deck[data-orient="retrato"] .s-encerramento .contato-texto{font-size:29px;max-width:85%}
+#deck[data-orient="retrato"] .s-encerramento .contato-linhas{font-size:27px}
+#deck[data-orient="retrato"] .s-encerramento .mono-final{width:180px}
 </style>
 </head>
 <body>
