@@ -1426,7 +1426,59 @@ function ligarConsole(cons){
   });
 }
 
-/* A exportação é ligada no bloco 6, os modelos no bloco 7. */
+/* ==========================================================================
+   BLOCO 6, Exportação em PDF
+   ========================================================================== */
+async function exportarPDF(){
+  const btn=document.getElementById("btn-pdf");
+  const deck=document.getElementById("deck");
+  const rotulo=btn.textContent;
+  const ativos=[...deck.querySelectorAll(".slide:not([hidden])")];
+  if(!ativos.length){
+    alert("Ligue ao menos um slide antes de baixar o PDF.");
+    return;
+  }
+  btn.disabled=true;
+  const retrato=state.orient==="retrato";
+  const fmt=retrato?[1080,1920]:[1920,1080];
+  const modo=retrato?"portrait":"landscape";
+  try{
+    /* As fontes precisam estar carregadas ou o html2canvas usa o fallback */
+    await document.fonts.ready;
+    deck.classList.add("exportando");
+
+    const { jsPDF }=window.jspdf;
+    const pdf=new jsPDF({orientation:modo, unit:"px", format:fmt});
+
+    for(let i=0;i<ativos.length;i++){
+      btn.textContent="Renderizando "+(i+1)+" de "+ativos.length;
+      const canvas=await html2canvas(ativos[i],{
+        scale:1.5, useCORS:true, backgroundColor:null, logging:false
+      });
+      const img=canvas.toDataURL("image/jpeg",0.92);
+      if(i>0) pdf.addPage(fmt, modo);
+      pdf.addImage(img,"JPEG",0,0,fmt[0],fmt[1]);
+    }
+
+    const nome="Proposta-"+kebab(state.cliente.nome)+"-"+dataArquivo()+".pdf";
+    pdf.save(nome);
+  }catch(err){
+    console.error(err);
+    alert(
+      "Não foi possível gerar o PDF.\n\n" +
+      "O que fazer: confirme que as fontes e as bibliotecas do CDN carregaram, " +
+      "aguarde alguns segundos e clique em Baixar PDF de novo.\n\n" +
+      "Detalhe técnico: " + (err && err.message ? err.message : String(err))
+    );
+  }finally{
+    deck.classList.remove("exportando");
+    ajustarEscala();
+    btn.disabled=false;
+    btn.textContent=rotulo;
+  }
+}
+
+/* Os modelos prontos são ligados no bloco 7. */
 document.addEventListener("DOMContentLoaded", ()=>{
   if(typeof montarConsole==="function") montarConsole();
   render();
