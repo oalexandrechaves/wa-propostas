@@ -25,10 +25,16 @@ anexa o logotipo do cliente, escolhe a orientação e baixa o PDF na hora.
   versionado no repositório remoto.
 - Um commit por bloco, não um commit gigante.
 
-## Pendência de sincronização
+## Pendência de sincronização (dívida a quitar)
 
-O deploy no Vercel foi feito primeiro, direto pelo conector do ambiente, em um
-projeto isolado chamado `wa-propostas`, sem passar pelo GitHub. Fica pendente:
+O deploy no Vercel foi feito primeiro, pelo Vercel CLI já logado no ambiente
+(conta `alexandrechaves847-4576`), subindo os arquivos direto do disco para um
+projeto novo e isolado chamado `wa-propostas`, sem passar pelo GitHub.
+
+Isto é uma dívida a quitar, não um estado aceitável: existe um deploy em produção
+sem repositório remoto correspondente. Enquanto essa dívida não for paga, o código
+em produção não tem origem versionada e rastreável. Precisa ser resolvido assim
+que possível:
 
 - Criar o repositório `oalexandrechaves/wa-propostas` no GitHub.
 - Adicionar o remote e fazer o push de todo este código, que já está commitado
