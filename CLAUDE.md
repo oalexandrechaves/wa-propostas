@@ -63,6 +63,24 @@ BINAH DIGITAL montarem orçamentos comerciais. Não substitui o `index.html`,
   final, e o painel de configuração não aparece na impressão.
 - WhatsApp de contato no slide de próximos passos: https://wa.me/5511912877060
 
+## Roteamento (vercel.json)
+
+Há um `vercel.json` na raiz, aditivo, com dois rewrites:
+
+- `/legado` serve o `index.html`. Funciona, porque não existe arquivo em `/legado`.
+- `/` serve o `orcamentos.html`. Intenção: a ferramenta nova responder na raiz.
+
+O `index.html` é o gerador de propostas legado, preservado e intocado, e passa
+a ser acessível em `/legado`.
+
+Atenção à precedência na Vercel: arquivos estáticos são resolvidos antes dos
+rewrites. Como existe `index.html` na raiz, o path `/` é atendido pelo próprio
+`index.html` antes de o rewrite rodar, então o rewrite de `/` para
+`orcamentos.html` pode não ter efeito no deploy. Isso precisa ser confirmado na
+Vercel. Uma solução definitiva para a raiz, sem mover nem renomear arquivos,
+não é possível apenas por configuração, então fica registrado como pendência a
+decidir com o responsável antes de qualquer escalada.
+
 ## Identidade visual
 
 Cores: grafite `#1F1E1E`, preto `#0F0E0E`, vermelho `#E63329`, creme `#F6F1E7`,
