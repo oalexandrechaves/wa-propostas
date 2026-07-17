@@ -25,22 +25,16 @@ anexa o logotipo do cliente, escolhe a orientação e baixa o PDF na hora.
   versionado no repositório remoto.
 - Um commit por bloco, não um commit gigante.
 
-## Pendência de sincronização (dívida a quitar)
+## Sincronização com o GitHub
 
-O deploy no Vercel foi feito primeiro, pelo Vercel CLI já logado no ambiente
-(conta `alexandrechaves847-4576`), subindo os arquivos direto do disco para um
-projeto novo e isolado chamado `wa-propostas`, sem passar pelo GitHub.
+O código está versionado no repositório remoto `oalexandrechaves/wa-propostas`,
+público, com o remote `origin` configurado e a branch `main` rastreando
+`origin/main`. Todo push deve continuar indo para esse destino, sempre depois
+de conferir `git remote -v`.
 
-Isto é uma dívida a quitar, não um estado aceitável: existe um deploy em produção
-sem repositório remoto correspondente. Enquanto essa dívida não for paga, o código
-em produção não tem origem versionada e rastreável. Precisa ser resolvido assim
-que possível:
-
-- Criar o repositório `oalexandrechaves/wa-propostas` no GitHub.
-- Adicionar o remote e fazer o push de todo este código, que já está commitado
-  localmente em commits separados por bloco.
-- Ligar o projeto Vercel `wa-propostas` a esse repositório, para que deploy e
-  repositório fiquem sincronizados nos próximos deploys.
+Fica como próximo passo, quando for conveniente, ligar o projeto Vercel
+`wa-propostas` a esse repositório, para que os próximos deploys saiam do GitHub
+e não mais do disco pelo Vercel CLI.
 
 ## Gerador de orçamentos (orcamentos.html)
 
