@@ -42,6 +42,33 @@ que possível:
 - Ligar o projeto Vercel `wa-propostas` a esse repositório, para que deploy e
   repositório fiquem sincronizados nos próximos deploys.
 
+## Gerador de orçamentos (orcamentos.html)
+
+Ferramenta interna separada, em `orcamentos.html`, para o Estúdio WA e a
+BINAH DIGITAL montarem orçamentos comerciais. Não substitui o `index.html`,
+é uma página adicional e independente.
+
+- Arquivo único, HTML, CSS e JavaScript vanilla, sem backend, sem build.
+- Nenhuma dependência externa em runtime. Sem CDN, sem Google Fonts, sem
+  bibliotecas. Fontes por pilha do sistema, para funcionar offline.
+- Duas colunas: painel de configuração à esquerda, preview ao vivo à direita,
+  atualizando a cada alteração. Estado só em memória.
+- O catálogo é a constante `CATALOGO` no topo do arquivo, comentada, para
+  editar preços, descrições e itens inclusos sem tocar na lógica.
+- Cor de identidade por categoria: Estúdio e Podcast magenta, Produção externa
+  laranja, Identidade e Pós-produção roxo, EthnosPRO verde, Web e Sistemas azul,
+  Assessoria de Imprensa ciano.
+- Regras de negócio: exclusividade entre planos e pacotes de estúdio (marcar um
+  desmarca os incompatíveis com aviso), cortes desabilitados quando o pacote
+  intensivo está selecionado (já inclusos), serviços com valor a definir bloqueiam
+  o PDF até o valor ser preenchido, e dois totais separados que nunca se somam:
+  total mensal recorrente e total de pagamento único.
+- PDF vetorial por `window.print()`, sem rasterização. A regra `@page` é injetada
+  conforme a orientação: paisagem `size: 297mm 167mm; margin: 0` e A4 retrato
+  `size: A4 portrait; margin: 0`. Um slide por página, sem página em branco no
+  final, e o painel de configuração não aparece na impressão.
+- WhatsApp de contato no slide de próximos passos: https://wa.me/5511912877060
+
 ## Identidade visual
 
 Cores: grafite `#1F1E1E`, preto `#0F0E0E`, vermelho `#E63329`, creme `#F6F1E7`,
