@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estúdio WA e BINAH DIGITAL, Gerador de Orçamentos</title>
+<style>
+/* ==========================================================================
+   Tokens de identidade
+   Sem dependência externa: fontes por pilha do sistema, tudo embutido.
+   ========================================================================== */
+:root{
+  /* Base escura e clara */
+  --bg-escuro:#0F0D16;
+  --bg-escuro-2:#171422;
+  --bg-escuro-3:#1F1B2C;
+  --creme:#F6F1E7;
+  --branco:#FFFFFF;
+  --tinta:#14121A;       /* texto sobre fundo claro */
+  --tinta-fraca:#5B5468;
+  --texto-claro:#EDE7DC; /* texto sobre fundo escuro */
+  --texto-fraco:#9C93AC;
+  --linha:#2C2740;
+
+  /* Cores neon por categoria */
+  --cor-estudio:#FF2E88;   /* magenta */
+  --cor-externa:#FF7A18;   /* laranja */
+  --cor-identidade:#8B5CF6;/* roxo */
+  --cor-ethnos:#22E07B;    /* verde */
+  --cor-web:#2E7BFF;       /* azul */
+  --cor-imprensa:#22D3EE;  /* ciano */
+
+  --alerta:#FFB020;
+
+  /* Fontes por pilha do sistema, funcionam offline sem CDN */
+  --fonte-display:'Poppins','Segoe UI',system-ui,'Helvetica Neue',Arial,sans-serif;
+  --fonte-corpo:'Inter','Segoe UI',system-ui,'Helvetica Neue',Arial,sans-serif;
+
+  --painel-larg:440px;
+
+  /* Dimensões do slide em px, casadas com o tamanho de página em mm.
+     297mm ~ 1122px e 167mm ~ 631px a 96dpi, então o px vira mm na impressão. */
+  --slide-larg:1122px;
+  --slide-alt:631px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--fonte-corpo);
+  background:var(--bg-escuro);
+  color:var(--texto-claro);
+  overflow:hidden;
+}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none}
+input,textarea,select{font-family:inherit}
+
+/* ==========================================================================
+   Estrutura de duas colunas
+   ========================================================================== */
+#app{
+  display:grid;
+  grid-template-columns:var(--painel-larg) 1fr;
+  height:100vh;
+  width:100vw;
+}
+
+/* --------------------------------------------------------------------------
+   Painel de configuração
+   -------------------------------------------------------------------------- */
+#painel{
+  background:var(--bg-escuro-2);
+  border-right:1px solid var(--linha);
+  overflow-y:auto;
+  padding:26px 24px 60px;
+}
+#painel::-webkit-scrollbar{width:10px}
+#painel::-webkit-scrollbar-thumb{background:#2E2940;border-radius:20px}
+
+.marca{
+  display:flex;align-items:baseline;gap:8px;
+  font-family:var(--fonte-display);
+  margin-bottom:4px;
+}
+.marca b{font-weight:800;letter-spacing:.02em}
+.marca span{color:var(--texto-fraco);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.sub-marca{font-size:12px;color:var(--texto-fraco);margin-bottom:22px}
+
+.secao{margin-top:26px}
+.secao > h2{
+  font-family:var(--fonte-display);
+  font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--texto-fraco);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.secao > h2::before{
+  content:"";width:22px;height:2px;background:var(--cor-estudio);border-radius:2px;
+}
+
+label.campo{display:block;margin-bottom:12px}
+label.campo > span{
+  display:block;font-size:12px;color:var(--texto-fraco);margin-bottom:5px;letter-spacing:.02em;
+}
+input[type=text],input[type=date],textarea,input.num,input.moeda{
+  width:100%;
+  background:var(--bg-escuro);
+  border:1px solid var(--linha);
+  border-radius:10px;
+  color:var(--texto-claro);
+  padding:10px 12px;
+  font-size:14px;
+  transition:border-color .15s;
+}
+input:focus,textarea:focus{outline:none;border-color:var(--cor-identidade)}
+textarea{resize:vertical;min-height:86px;line-height:1.5}
+
+/* Seletor de orientação */
+.orient{display:flex;gap:10px}
+.orient button{
+  flex:1;
+  background:var(--bg-escuro);
+  border:1px solid var(--linha);
+  color:var(--texto-fraco);
+  border-radius:10px;
+  padding:12px 10px;
+  font-size:13px;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  transition:all .15s;
+}
+.orient button .icone{
+  border:2px solid currentColor;border-radius:3px;display:block;
+}
+.orient button[data-o=paisagem] .icone{width:34px;height:20px}
+.orient button[data-o=retrato] .icone{width:20px;height:28px}
+.orient button.ativo{
+  border-color:var(--cor-identidade);
+  color:var(--branco);
+  background:var(--bg-escuro-3);
+}
+
+/* Catálogo */
+.categoria{
+  border:1px solid var(--linha);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden;
+  --c:var(--cor-estudio);
+}
+.categoria > .cabeca{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;
+  background:var(--bg-escuro);
+  border-left:4px solid var(--c);
+}
+.categoria > .cabeca .ponto{width:10px;height:10px;border-radius:50%;background:var(--c);flex:0 0 auto}
+.categoria > .cabeca h3{font-family:var(--fonte-display);font-size:14px;font-weight:700}
+.categoria > .cabeca .conta{margin-left:auto;font-size:12px;color:var(--texto-fraco)}
+
+.servico{border-top:1px solid var(--linha);padding:11px 14px}
+.servico .topo{display:flex;gap:11px;align-items:flex-start;cursor:pointer}
+.servico .topo input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:20px;height:20px;flex:0 0 auto;margin-top:1px;
+  border:2px solid var(--linha);border-radius:6px;background:var(--bg-escuro);
+  position:relative;transition:all .15s;
+}
+.servico .topo input[type=checkbox]:checked{background:var(--c);border-color:var(--c)}
+.servico .topo input[type=checkbox]:checked::after{
+  content:"";position:absolute;left:5px;top:1px;width:6px;height:11px;
+  border:solid #0F0D16;border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+.servico .topo input[type=checkbox]:disabled{opacity:.4;cursor:not-allowed}
+.servico .rotulo{flex:1;min-width:0}
+.servico .rotulo .nome{font-size:14px;font-weight:600;line-height:1.35}
+.servico .rotulo .preco{font-size:12px;color:var(--texto-fraco);margin-top:2px}
+.servico .rotulo .preco.definir{color:var(--alerta);font-weight:600}
+.servico.desabilitado .rotulo{opacity:.5}
+.servico .nota-mini{
+  font-size:11.5px;color:var(--alerta);margin-top:6px;padding-left:31px;line-height:1.4;
+}
+
+/* Campos editáveis do serviço marcado */
+.editaveis{padding:12px 14px 4px 31px;display:none;gap:10px;flex-direction:column}
+.servico.aberto .editaveis{display:flex}
+.editaveis .linha-nums{display:flex;gap:10px}
+.editaveis .linha-nums label{flex:1}
+.editaveis label > span{font-size:11px;color:var(--texto-fraco);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+.editaveis textarea{min-height:60px;font-size:13px}
+input.num,input.moeda{padding:8px 10px;font-size:13px}
+
+/* Avisos */
+#avisos{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.aviso{
+  font-size:12.5px;line-height:1.45;
+  border-radius:10px;padding:10px 12px;
+  border:1px solid;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.aviso.info{border-color:var(--cor-identidade);background:rgba(139,92,246,.1);color:#CDBBFF}
+.aviso.alerta{border-color:var(--alerta);background:rgba(255,176,32,.1);color:#FFD98A}
+.aviso .marcador{font-weight:800}
+
+/* Totais */
+#totais{
+  margin-top:22px;
+  border:1px solid var(--linha);border-radius:14px;overflow:hidden;
+}
+#totais .t-linha{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:13px 15px;
+}
+#totais .t-linha + .t-linha{border-top:1px solid var(--linha)}
+#totais .t-linha .rot{font-size:12px;color:var(--texto-fraco);text-transform:uppercase;letter-spacing:.08em}
+#totais .t-linha .val{font-family:var(--fonte-display);font-weight:800;font-size:20px}
+#totais .t-linha.mensal .val{color:var(--cor-ethnos)}
+#totais .t-linha.unico .val{color:var(--cor-imprensa)}
+
+/* Botão gerar */
+#gerar{
+  margin-top:20px;width:100%;
+  background:linear-gradient(90deg,var(--cor-estudio),var(--cor-identidade));
+  color:#fff;font-family:var(--fonte-display);font-weight:700;font-size:16px;
+  padding:15px;border-radius:12px;letter-spacing:.02em;
+  transition:filter .15s,opacity .15s;
+}
+#gerar:hover{filter:brightness(1.08)}
+#gerar:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
+#gerar-nota{font-size:12px;color:var(--alerta);margin-top:8px;text-align:center;min-height:16px}
+
+/* --------------------------------------------------------------------------
+   Preview
+   -------------------------------------------------------------------------- */
+#preview{
+  position:relative;
+  background:radial-gradient(120% 120% at 50% -10%, #1A1626 0%, #0B0910 70%);
+  overflow:auto;
+  padding:34px 20px 60px;
+  display:flex;justify-content:center;align-items:flex-start;
+}
+#preview::-webkit-scrollbar{width:12px}
+#preview::-webkit-scrollbar-thumb{background:#2E2940;border-radius:20px}
+#sizer{position:relative}
+#deck-escala{transform-origin:top left}
+
+/* ==========================================================================
+   Slides
+   ========================================================================== */
+#deck{display:flex;flex-direction:column;gap:34px}
+.slide{
+  position:relative;
+  width:var(--slide-larg);
+  height:var(--slide-alt);
+  flex:0 0 auto;
+  overflow:hidden;
+  border-radius:16px;
+  box-shadow:0 30px 70px rgba(0,0,0,.5);
+  color:var(--texto-claro);
+  background:var(--bg-escuro);
+  font-family:var(--fonte-corpo);
+}
+#deck[data-orient=retrato]{--slide-larg:794px;--slide-alt:1122px}
+
+/* Slides escuros e claros */
+.slide.escuro{
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(255,255,255,.05), transparent 60%),
+    linear-gradient(155deg,var(--bg-escuro-2),var(--bg-escuro));
+  color:var(--texto-claro);
+}
+.slide.claro{background:var(--creme);color:var(--tinta)}
+
+/* Marca d'água de categoria por variável --c */
+.slide{--c:var(--cor-estudio)}
+
+.rotulo-util{
+  font-family:var(--fonte-display);
+  font-weight:700;font-size:15px;letter-spacing:.28em;text-transform:uppercase;
+}
+
+/* Assinatura de rodapé */
+.assinatura-rodape{
+  position:absolute;left:64px;bottom:52px;
+  display:flex;align-items:center;gap:14px;
+  font-family:var(--fonte-display);font-size:17px;letter-spacing:.02em;
+}
+.assinatura-rodape b{font-weight:800}
+.assinatura-rodape .traco{width:34px;height:2px;background:currentColor;opacity:.5;border-radius:2px}
+.slide.claro .assinatura-rodape{color:var(--tinta-fraca)}
+.slide.escuro .assinatura-rodape{color:var(--texto-fraco)}
+
+.marca-fundo{
+  position:absolute;right:-40px;bottom:-70px;
+  font-family:var(--fonte-display);font-weight:800;
+  font-size:340px;line-height:.8;color:var(--c);opacity:.07;
+  pointer-events:none;user-select:none;
+}
+
+/* ---- Capa ---- */
+.s-capa{padding:78px 84px}
+.s-capa .selo{color:var(--c)}
+.s-capa h1{
+  font-family:var(--fonte-display);font-weight:800;
+  font-size:104px;line-height:.98;margin-top:26px;letter-spacing:-.02em;
+}
+.s-capa .cliente{margin-top:40px}
+.s-capa .cliente .nome{font-family:var(--fonte-display);font-weight:700;font-size:38px}
+.s-capa .cliente .empresa{font-size:22px;color:var(--texto-fraco);margin-top:4px}
+.s-capa .data{position:absolute;right:84px;bottom:64px;font-size:18px;color:var(--texto-fraco)}
+.s-capa .barra{width:120px;height:8px;border-radius:8px;background:var(--c);margin-top:30px}
+
+/* ---- Apresentação ---- */
+.s-apre{padding:80px 96px;display:flex;flex-direction:column;justify-content:center}
+.s-apre .selo{color:var(--c)}
+.s-apre p{
+  font-family:var(--fonte-display);font-weight:600;
+  font-size:40px;line-height:1.3;margin-top:30px;letter-spacing:-.01em;
+  white-space:pre-wrap;
+}
+
+/* ---- Visão geral ---- */
+.s-visao{padding:70px 84px}
+.s-visao .selo{color:var(--tinta-fraca)}
+.s-visao h2{font-family:var(--fonte-display);font-weight:800;font-size:60px;margin-top:14px;letter-spacing:-.02em}
+.grade-cat{
+  margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
+}
+#deck[data-orient=retrato] .grade-cat{grid-template-columns:repeat(2,1fr)}
+.card-cat{
+  border-radius:18px;padding:26px 24px;min-height:150px;
+  background:var(--branco);
+  border:1px solid rgba(0,0,0,.06);
+  border-top:6px solid var(--cc);
+  display:flex;flex-direction:column;
+  box-shadow:0 14px 30px rgba(0,0,0,.06);
+}
+.card-cat .num{
+  font-family:var(--fonte-display);font-weight:800;font-size:34px;color:var(--cc);line-height:1;
+}
+.card-cat .titulo{font-family:var(--fonte-display);font-weight:700;font-size:22px;margin-top:12px;line-height:1.15}
+.card-cat .conta{margin-top:auto;font-size:14px;color:var(--tinta-fraca)}
+
+/* ---- Slide de serviço ---- */
+.s-serv{padding:66px 84px;display:flex;flex-direction:column}
+.s-serv .selo{color:var(--c)}
+.s-serv h2{font-family:var(--fonte-display);font-weight:800;font-size:56px;margin-top:14px;line-height:1.02;letter-spacing:-.02em;max-width:80%}
+.s-serv .descricao{font-size:23px;line-height:1.5;margin-top:22px;max-width:74%;color:var(--tinta)}
+.slide.escuro .s-serv .descricao{color:var(--texto-claro)}
+.s-serv .inclusos{margin-top:auto;display:flex;flex-wrap:wrap;gap:12px;padding-top:30px}
+#deck[data-orient=retrato] .s-serv .inclusos{flex-direction:column}
+.s-serv .inclusos .chip{
+  display:flex;align-items:center;gap:10px;
+  border:1px solid var(--c);border-radius:999px;padding:9px 18px;font-size:15px;
+  background:color-mix(in srgb, var(--c) 12%, transparent);
+}
+.s-serv .inclusos .chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+.s-serv .preco-serv{
+  position:absolute;right:84px;top:66px;text-align:right;
+}
+.s-serv .preco-serv .v{font-family:var(--fonte-display);font-weight:800;font-size:44px;color:var(--c)}
+.s-serv .preco-serv .u{font-size:15px;color:var(--tinta-fraca);margin-top:2px}
+.slide.escuro .s-serv .preco-serv .u{color:var(--texto-fraco)}
+
+/* ---- Investimento ---- */
+.s-inv{padding:60px 76px;display:flex;flex-direction:column}
+.s-inv .selo{color:var(--tinta-fraca)}
+.s-inv h2{font-family:var(--fonte-display);font-weight:800;font-size:52px;margin-top:10px;letter-spacing:-.02em}
+.tabela{margin-top:28px;width:100%;border-collapse:collapse;font-size:16px}
+.tabela thead th{
+  text-align:left;font-family:var(--fonte-display);font-weight:700;font-size:12px;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--tinta-fraca);
+  padding:0 12px 10px;border-bottom:2px solid rgba(0,0,0,.12);
+}
+.tabela thead th.n,.tabela tbody td.n{text-align:right}
+.tabela tbody td{padding:12px;border-bottom:1px solid rgba(0,0,0,.08);vertical-align:top}
+.tabela tbody td .pt{width:8px;height:8px;border-radius:50%;background:var(--rc);display:inline-block;margin-right:9px}
+.tabela tbody td .sv{font-weight:600}
+.tabela tbody td .tp{font-size:12px;color:var(--tinta-fraca);margin-top:2px}
+.inv-totais{margin-top:24px;display:flex;gap:18px;flex-wrap:wrap}
+.inv-totais .bloco{
+  flex:1;min-width:220px;border-radius:16px;padding:20px 22px;color:#fff;
+}
+.inv-totais .bloco.mensal{background:linear-gradient(120deg,#12855A,var(--cor-ethnos))}
+.inv-totais .bloco.unico{background:linear-gradient(120deg,#0E7C90,var(--cor-imprensa))}
+.inv-totais .bloco .r{font-size:13px;text-transform:uppercase;letter-spacing:.1em;opacity:.9}
+.inv-totais .bloco .v{font-family:var(--fonte-display);font-weight:800;font-size:38px;margin-top:6px;color:#04120C}
+.inv-totais .bloco.unico .v{color:#04141A}
+.s-inv .rodape-inv{margin-top:auto;padding-top:22px;font-size:13.5px;line-height:1.5;color:var(--tinta-fraca);max-width:90%}
+
+/* ---- Próximos passos ---- */
+.s-passos{padding:70px 84px;display:flex;flex-direction:column}
+.s-passos .selo{color:var(--c)}
+.s-passos h2{font-family:var(--fonte-display);font-weight:800;font-size:60px;margin-top:12px;letter-spacing:-.02em}
+.passos{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+#deck[data-orient=retrato] .passos{grid-template-columns:1fr}
+.passo{
+  border:1px solid var(--linha);border-radius:18px;padding:26px 22px;background:rgba(255,255,255,.03);
+}
+.passo .n{font-family:var(--fonte-display);font-weight:800;font-size:40px;color:var(--c);line-height:1}
+.passo p{font-size:17px;line-height:1.45;margin-top:14px}
+.wpp{
+  margin-top:auto;display:inline-flex;align-items:center;gap:12px;align-self:flex-start;
+  background:#25D366;color:#04231A;font-family:var(--fonte-display);font-weight:700;font-size:20px;
+  padding:16px 28px;border-radius:14px;text-decoration:none;
+}
+.wpp .num{font-weight:600}
+
+/* Estado vazio do preview */
+.vazio{
+  color:var(--texto-fraco);text-align:center;max-width:420px;margin:80px auto;
+}
+.vazio h3{font-family:var(--fonte-display);font-weight:700;font-size:22px;color:var(--texto-claro);margin-bottom:10px}
+
+/* ==========================================================================
+   Impressão: PDF vetorial por window.print
+   O @page é injetado dinamicamente conforme a orientação.
+   ========================================================================== */
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #painel{display:none !important}
+  #app{display:block;height:auto}
+  #preview{overflow:visible;padding:0;display:block;background:#fff}
+  #sizer{width:auto !important;height:auto !important}
+  #deck-escala{transform:none !important}
+  #deck{gap:0}
+  .slide{
+    border-radius:0;box-shadow:none;margin:0;
+    break-after:page;page-break-after:always;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .slide:last-child{break-after:auto;page-break-after:avoid}
+  .card-cat,.inv-totais .bloco,.slide *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===================== Painel de configuração ===================== -->
+  <aside id="painel">
+    <div class="marca"><b>BINAH DIGITAL</b><span>x Estúdio WA</span></div>
+    <div class="sub-marca">Gerador interno de orçamentos</div>
+
+    <!-- Dados do cliente -->
+    <section class="secao">
+      <h2>Dados do cliente</h2>
+      <label class="campo"><span>Nome</span>
+        <input type="text" id="c-nome" placeholder="Nome do contato"></label>
+      <label class="campo"><span>Empresa ou cargo</span>
+        <input type="text" id="c-empresa" placeholder="Empresa ou cargo"></label>
+      <label class="campo"><span>Data da proposta</span>
+        <input type="date" id="c-data"></label>
+    </section>
+
+    <!-- Orientação -->
+    <section class="secao">
+      <h2>Orientação de saída</h2>
+      <div class="orient" id="orient">
+        <button data-o="paisagem" class="ativo"><span class="icone"></span>Paisagem 16:9</button>
+        <button data-o="retrato"><span class="icone"></span>A4 Retrato</button>
+      </div>
+    </section>
+
+    <!-- Apresentação -->
+    <section class="secao">
+      <h2>Texto de apresentação</h2>
+      <label class="campo"><span>Opcional. Se vazio, o slide de diagnóstico não é gerado.</span>
+        <textarea id="c-apre" placeholder="Diagnóstico ou contexto da proposta"></textarea></label>
+    </section>
+
+    <!-- Catálogo -->
+    <section class="secao">
+      <h2>Catálogo de serviços</h2>
+      <div id="catalogo"></div>
+    </section>
+
+    <!-- Avisos das regras de negócio -->
+    <div id="avisos"></div>
+
+    <!-- Totais -->
+    <div id="totais">
+      <div class="t-linha mensal"><span class="rot">Total mensal recorrente</span><span class="val" id="t-mensal">R$ 0,00</span></div>
+      <div class="t-linha unico"><span class="rot">Total pagamento único</span><span class="val" id="t-unico">R$ 0,00</span></div>
+    </div>
+
+    <button id="gerar" disabled>Gerar PDF</button>
+    <div id="gerar-nota"></div>
+  </aside>
+
+  <!-- ===================== Preview ao vivo ===================== -->
+  <main id="preview">
+    <div id="sizer">
+      <div id="deck-escala">
+        <div id="deck" data-orient="paisagem"></div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+"use strict";
+
+/* ==========================================================================
+   CATÁLOGO
+   Constante editável. Preços em reais (número puro), descrições e itens
+   inclusos ficam aqui, separados da lógica. Para ajustar valores ou textos,
+   basta editar este bloco sem tocar no restante do arquivo.
+
+   Campos de cada serviço:
+     id         identificador único
+     nome       rótulo exibido
+     valor      valor padrão em reais (0 quando "a definir")
+     recorrente true = entra no total mensal, false = pagamento único
+     unidade    rótulo do preço (por mês, por episódio, pagamento único, ...)
+     qtd        quantidade padrão
+     aDefinir   true bloqueia o PDF até o valor ser preenchido
+     descricao  texto padrão editável, aparece no slide do serviço
+     inclusos   itens listados no slide do serviço
+     incompat   ids incompatíveis: marcar este desmarca aqueles
+     desabilitaSe id que, quando marcado, desabilita este serviço
+   ========================================================================== */
+
+// Grupo dos planos e pacotes de estúdio, todos mutuamente exclusivos entre si
+const EXCL_ESTUDIO = [
+  "podcast-anual","podcast-semestral","podcast-trimestral","podcast-mensal",
+  "podcast-avulso","pacote-26h","pacote-intensivo"
+];
+// Cada item recebe como incompatíveis todos os outros do grupo
+const outros = (id) => EXCL_ESTUDIO.filter(x => x !== id);
+
+const CATALOGO = [
+  {
+    id:"estudio", nome:"Estúdio e Podcast", cor:"var(--cor-estudio)",
+    servicos:[
+      { id:"podcast-anual", nome:"Podcast, plano anual", valor:1588, recorrente:true, unidade:"por mês", incompat:outros("podcast-anual"),
+        descricao:"Programa de podcast no plano anual, com quatro episódios mensais de uma hora de gravação e a melhor condição por episódio.",
+        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 397,00 por episódio"] },
+      { id:"podcast-semestral", nome:"Podcast, plano semestral", valor:1708, recorrente:true, unidade:"por mês", incompat:outros("podcast-semestral"),
+        descricao:"Programa de podcast no plano semestral, com quatro episódios mensais de uma hora de gravação.",
+        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 427,00 por episódio"] },
+      { id:"podcast-trimestral", nome:"Podcast, plano trimestral", valor:1828, recorrente:true, unidade:"por mês", incompat:outros("podcast-trimestral"),
+        descricao:"Programa de podcast no plano trimestral, com quatro episódios mensais de uma hora de gravação.",
+        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 457,00 por episódio"] },
+      { id:"podcast-mensal", nome:"Podcast, plano mensal", valor:1988, recorrente:true, unidade:"por mês", incompat:outros("podcast-mensal"),
+        descricao:"Programa de podcast no plano mensal, com quatro episódios mensais de uma hora de gravação e total flexibilidade.",
+        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 497,00 por episódio"] },
+      { id:"podcast-avulso", nome:"Podcast avulso", valor:597, recorrente:false, unidade:"por episódio", incompat:outros("podcast-avulso"),
+        descricao:"Episódio avulso de podcast, ideal para testar o formato antes de fechar um plano recorrente.",
+        inclusos:["1 episódio de 1h00 de gravação"] },
+      { id:"pacote-26h", nome:"Pacote 26 horas de estúdio", valor:9534, recorrente:false, unidade:"pagamento por uso", incompat:outros("pacote-26h"),
+        descricao:"Pacote de 26 horas de estúdio com utilização flexível ao longo de doze meses e pagamento conforme o uso.",
+        inclusos:["26 horas de estúdio","Utilização flexível em 12 meses","Pagamento por uso"] },
+      { id:"pacote-intensivo", nome:"Pacote intensivo", valor:2850, recorrente:false, unidade:"pagamento único", incompat:outros("pacote-intensivo"),
+        descricao:"Imersão de produção com dez horas de estúdio em duas diárias, gravação e edição de seis episódios com cortes inclusos.",
+        inclusos:["10 horas em 2 diárias de 5 horas","Gravação e edição de 6 episódios","2 a 5 cortes por episódio inclusos"] },
+      { id:"maquiagem", nome:"Maquiagem profissional", valor:250, recorrente:false, unidade:"pagamento único",
+        descricao:"Maquiagem profissional para gravação, garantindo apresentação impecável diante das câmeras.",
+        inclusos:["Maquiagem profissional para a gravação"] }
+    ]
+  },
+  {
+    id:"externa", nome:"Produção externa", cor:"var(--cor-externa)",
+    servicos:[
+      { id:"foto-incompany", nome:"Fotografia in company", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
+        descricao:"Ensaio fotográfico realizado na estrutura do cliente, dirigido para a comunicação da marca.",
+        inclusos:["Escopo e valor a definir conforme a demanda"] },
+      { id:"podcast-incompany", nome:"Podcast in company", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
+        descricao:"Produção de podcast na sede do cliente, com estrutura móvel do Estúdio WA.",
+        inclusos:["Escopo e valor a definir conforme a demanda"] },
+      { id:"podcast-eventos", nome:"Podcast em feiras e eventos", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
+        descricao:"Cobertura em podcast durante feiras e eventos, capturando conteúdo ao vivo.",
+        inclusos:["Escopo e valor a definir conforme a demanda"] }
+    ]
+  },
+  {
+    id:"identidade", nome:"Identidade e Pós-produção", cor:"var(--cor-identidade)",
+    servicos:[
+      { id:"identidade-visual", nome:"Identidade visual completa", valor:1850, recorrente:false, unidade:"pagamento único",
+        descricao:"Sistema completo de identidade visual, do logotipo às aplicações, pronto para colocar a marca no ar.",
+        inclusos:["Logotipo","Submarca","Ícone","Tipografia","Paleta de cores","Capas de destaque","Configuração dos perfis","Manual da marca","Link de contato e redes","Vinheta","Arte de thumbnail","GCs","QR Codes","2 canecas"] },
+      { id:"vinhetas", nome:"Vinhetas e identidade para podcast", valor:380, recorrente:false, unidade:"pagamento único",
+        descricao:"Pacote de vinhetas e identidade visual para o podcast, com inserções gráficas na edição.",
+        inclusos:["Vinheta de abertura","Vinheta de encerramento","GCs","QR Codes","Inserção de informações gráficas na edição"] },
+      { id:"cortes", nome:"Cortes para redes sociais", valor:140, recorrente:true, unidade:"por episódio", desabilitaSe:"pacote-intensivo",
+        descricao:"Cortes verticais para redes sociais a partir de cada episódio, prontos para distribuição.",
+        inclusos:["8 cortes por episódio"] }
+    ]
+  },
+  {
+    id:"ethnos", nome:"EthnosPRO", cor:"var(--cor-ethnos)",
+    servicos:[
+      { id:"ethnospro", nome:"EthnosPRO", valor:2997, recorrente:true, unidade:"por mês",
+        descricao:"Inteligência artificial integrada ao WhatsApp com dashboard analítico para atendimento e dados em tempo real.",
+        inclusos:["Inteligência artificial integrada ao WhatsApp","Dashboard analítico"] }
+    ]
+  },
+  {
+    id:"web", nome:"Web e Sistemas", cor:"var(--cor-web)",
+    servicos:[
+      { id:"site", nome:"Site", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
+        descricao:"Desenvolvimento de site institucional sob medida para a marca.",
+        inclusos:["Escopo e valor a definir conforme o projeto"] },
+      { id:"landing", nome:"Landing page", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
+        descricao:"Landing page focada em conversão para campanhas e lançamentos.",
+        inclusos:["Escopo e valor a definir conforme o projeto"] },
+      { id:"sistemas", nome:"Sistemas sob medida", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
+        descricao:"Sistemas sob medida para automatizar processos e operações do cliente.",
+        inclusos:["Escopo e valor a definir conforme o projeto"] }
+    ]
+  },
+  {
+    id:"imprensa", nome:"Assessoria de Imprensa", cor:"var(--cor-imprensa)",
+    servicos:[
+      { id:"assessoria", nome:"Assessoria de imprensa", valor:3000, recorrente:true, unidade:"por mês",
+        descricao:"Assessoria de imprensa com produção de pauta, releases e agendamento em televisão e rádio.",
+        inclusos:["Produção de pauta","Releases","Agendamento em televisão e rádio"] }
+    ]
+  }
+];
+
+// Índice rápido id -> {servico, categoria}
+const INDICE = {};
+CATALOGO.forEach(cat => cat.servicos.forEach(sv => INDICE[sv.id] = {sv, cat}));
+
+/* ==========================================================================
+   Estado em memória
+   ========================================================================== */
+const estado = {
+  orientacao:"paisagem",
+  sel:{}  // id -> {on, qtd, valor, descricao}
+};
+// Inicializa a seleção com os padrões do catálogo
+Object.values(INDICE).forEach(({sv}) => {
+  estado.sel[sv.id] = { on:false, qtd:1, valor:sv.valor, descricao:sv.descricao };
+});
+
+// Data padrão: hoje
+const hoje = new Date();
+const iso = hoje.toISOString().slice(0,10);
+document.getElementById("c-data").value = iso;
+
+/* ==========================================================================
+   Utilidades
+   ========================================================================== */
+const brl = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
+const money = (n) => brl.format(n || 0);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const kebab = (s) => (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "cliente";
+
+function dataExtenso(isoStr){
+  if(!isoStr) return "";
+  const [a,m,d] = isoStr.split("-").map(Number);
+  const meses = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  return `${d} de ${meses[m-1]} de ${a}`;
+}
+
+/* ==========================================================================
+   Render do catálogo no painel
+   ========================================================================== */
+const elCatalogo = document.getElementById("catalogo");
+
+function renderCatalogo(){
+  elCatalogo.innerHTML = "";
+  CATALOGO.forEach(cat => {
+    const marcados = cat.servicos.filter(sv => estado.sel[sv.id].on).length;
+    const box = document.createElement("div");
+    box.className = "categoria";
+    box.style.setProperty("--c", cat.cor);
+    box.innerHTML = `
+      <div class="cabeca">
+        <span class="ponto"></span>
+        <h3>${esc(cat.nome)}</h3>
+        <span class="conta">${marcados ? marcados + " selecionado(s)" : ""}</span>
+      </div>`;
+
+    cat.servicos.forEach(sv => {
+      const s = estado.sel[sv.id];
+      const desab = sv.desabilitaSe && estado.sel[sv.desabilitaSe] && estado.sel[sv.desabilitaSe].on;
+      const wrap = document.createElement("div");
+      wrap.className = "servico" + (s.on ? " aberto" : "") + (desab ? " desabilitado" : "");
+      wrap.style.setProperty("--c", cat.cor);
+
+      const precoTxt = sv.aDefinir && !(s.valor > 0)
+        ? `<div class="preco definir">a definir</div>`
+        : `<div class="preco">${money(s.valor)} ${esc(sv.unidade)}</div>`;
+
+      wrap.innerHTML = `
+        <label class="topo">
+          <input type="checkbox" data-id="${sv.id}" ${s.on?"checked":""} ${desab?"disabled":""}>
+          <span class="rotulo">
+            <span class="nome">${esc(sv.nome)}</span>
+            ${precoTxt}
+          </span>
+        </label>
+        ${desab ? `<div class="nota-mini">Já incluso no pacote intensivo, não é necessário contratar à parte.</div>` : ""}
+        <div class="editaveis">
+          <div class="linha-nums">
+            <label><span>Quantidade</span>
+              <input class="num" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${s.qtd}"></label>
+            <label><span>Valor unitário (R$)</span>
+              <input class="moeda" type="number" min="0" step="0.01" data-campo="valor" data-id="${sv.id}" value="${s.valor}" placeholder="${sv.aDefinir?"a definir":""}"></label>
+          </div>
+          <label><span>Descrição</span>
+            <textarea data-campo="descricao" data-id="${sv.id}">${esc(s.descricao)}</textarea></label>
+        </div>`;
+      box.appendChild(wrap);
+    });
+    elCatalogo.appendChild(box);
+  });
+}
+
+/* ==========================================================================
+   Regras de negócio, avisos e totais
+   ========================================================================== */
+const elAvisos = document.getElementById("avisos");
+let avisosExcl = []; // avisos temporários de exclusividade
+
+function aplicarRegrasEStatus(){
+  // Regra 2: cortes desabilitado quando o pacote intensivo está marcado
+  if(estado.sel["pacote-intensivo"].on && estado.sel["cortes"].on){
+    estado.sel["cortes"].on = false;
+  }
+
+  // Totais: recorrente e único, nunca somados juntos
+  let mensal = 0, unico = 0;
+  const pendentes = [];
+  Object.values(INDICE).forEach(({sv}) => {
+    const s = estado.sel[sv.id];
+    if(!s.on) return;
+    // Regra 3: valor a definir bloqueia o PDF
+    if(sv.aDefinir && !(s.valor > 0)){ pendentes.push(sv.nome); return; }
+    const total = (Number(s.qtd)||0) * (Number(s.valor)||0);
+    if(sv.recorrente) mensal += total; else unico += total;
+  });
+
+  document.getElementById("t-mensal").textContent = money(mensal);
+  document.getElementById("t-unico").textContent = money(unico);
+
+  // Avisos
+  elAvisos.innerHTML = "";
+  avisosExcl.forEach(txt => addAviso("info", txt));
+  if(estado.sel["pacote-intensivo"].on){
+    addAviso("info","O pacote intensivo já inclui os cortes por episódio, então o adicional de cortes fica indisponível.");
+  }
+  if(pendentes.length){
+    addAviso("alerta","Defina o valor para gerar o PDF: " + pendentes.join(", ") + ".");
+  }
+
+  // Botão gerar
+  const algum = Object.values(estado.sel).some(s => s.on);
+  const btn = document.getElementById("gerar");
+  const nota = document.getElementById("gerar-nota");
+  if(!algum){
+    btn.disabled = true; nota.textContent = "Selecione ao menos um serviço.";
+  } else if(pendentes.length){
+    btn.disabled = true; nota.textContent = "Há serviços com valor a definir.";
+  } else {
+    btn.disabled = false; nota.textContent = "";
+  }
+}
+
+function addAviso(tipo, texto){
+  const el = document.createElement("div");
+  el.className = "aviso " + tipo;
+  el.innerHTML = `<span class="marcador">${tipo==="alerta"?"!":"i"}</span><span>${esc(texto)}</span>`;
+  elAvisos.appendChild(el);
+}
+
+/* ==========================================================================
+   Manipulação de eventos do painel
+   ========================================================================== */
+
+// Marcar ou desmarcar serviço, com exclusividade
+elCatalogo.addEventListener("change", (e) => {
+  const alvo = e.target;
+  if(alvo.matches("input[type=checkbox]")){
+    const id = alvo.dataset.id;
+    const s = estado.sel[id];
+    avisosExcl = [];
+    if(alvo.checked){
+      s.on = true;
+      // Regra 1: desmarca incompatíveis
+      const inc = INDICE[id].sv.incompat || [];
+      const removidos = [];
+      inc.forEach(oid => {
+        if(estado.sel[oid] && estado.sel[oid].on){
+          estado.sel[oid].on = false;
+          removidos.push(INDICE[oid].sv.nome);
+        }
+      });
+      if(removidos.length){
+        avisosExcl.push(`${INDICE[id].sv.nome} desmarcou: ${removidos.join(", ")}. Esses itens são mutuamente exclusivos.`);
+      }
+    } else {
+      s.on = false;
+    }
+    atualizarTudo();
+  }
+});
+
+// Campos editáveis: quantidade, valor, descrição
+elCatalogo.addEventListener("input", (e) => {
+  const alvo = e.target;
+  const campo = alvo.dataset.campo;
+  if(!campo) return;
+  const id = alvo.dataset.id;
+  const s = estado.sel[id];
+  if(campo === "qtd") s.qtd = Math.max(1, Number(alvo.value)||1);
+  else if(campo === "valor") s.valor = Math.max(0, Number(alvo.value)||0);
+  else if(campo === "descricao") s.descricao = alvo.value;
+  aplicarRegrasEStatus();
+  renderPreview();
+  ajustarEscala();
+});
+
+// Dados do cliente e apresentação
+["c-nome","c-empresa","c-data","c-apre"].forEach(idc => {
+  document.getElementById(idc).addEventListener("input", () => { renderPreview(); ajustarEscala(); });
+});
+
+// Orientação
+document.getElementById("orient").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if(!b) return;
+  estado.orientacao = b.dataset.o;
+  document.querySelectorAll("#orient button").forEach(x => x.classList.toggle("ativo", x===b));
+  document.getElementById("deck").dataset.orient = estado.orientacao;
+  renderPreview();
+  ajustarEscala();
+});
+
+// Recalcula tudo depois de mudança estrutural (seleção).
+// As regras rodam antes do render do catálogo para o checkbox refletir
+// o estado já corrigido (por exemplo, cortes desligado pelo intensivo).
+function atualizarTudo(){
+  aplicarRegrasEStatus();
+  renderCatalogo();
+  renderPreview();
+  ajustarEscala();
+}
+
+/* ==========================================================================
+   Render do preview: slides dinâmicos
+   ========================================================================== */
+const deck = document.getElementById("deck");
+
+function selecionadosValidos(){
+  const out = [];
+  CATALOGO.forEach(cat => cat.servicos.forEach(sv => {
+    const s = estado.sel[sv.id];
+    if(s.on) out.push({sv, cat, s});
+  }));
+  return out;
+}
+
+function renderPreview(){
+  const nome = document.getElementById("c-nome").value.trim();
+  const empresa = document.getElementById("c-empresa").value.trim();
+  const dataIso = document.getElementById("c-data").value;
+  const apre = document.getElementById("c-apre").value.trim();
+  const itens = selecionadosValidos();
+
+  deck.dataset.orient = estado.orientacao;
+
+  if(!itens.length){
+    deck.innerHTML = `<div class="vazio">
+      <h3>Monte o orçamento</h3>
+      <p>Selecione serviços no painel à esquerda para ver a proposta tomar forma aqui, atualizando a cada ajuste.</p>
+    </div>`;
+    return;
+  }
+
+  let html = "";
+
+  // 1. Capa
+  html += `
+    <section class="slide escuro s-capa" style="--c:${INDICE[itens[0].sv.id].cat.cor}">
+      <div class="rotulo-util selo">Proposta comercial</div>
+      <h1>Proposta<br>comercial</h1>
+      <div class="barra"></div>
+      <div class="cliente">
+        <div class="nome">${esc(nome || "Nome do cliente")}</div>
+        ${empresa ? `<div class="empresa">${esc(empresa)}</div>` : ""}
+      </div>
+      <div class="data">${esc(dataExtenso(dataIso))}</div>
+      <div class="assinatura-rodape"><b>BINAH DIGITAL</b><span class="traco"></span>Estúdio WA</div>
+    </section>`;
+
+  // 2. Apresentação, só se houver texto
+  if(apre){
+    html += `
+      <section class="slide escuro s-apre" style="--c:var(--cor-identidade)">
+        <div class="rotulo-util selo">Diagnóstico</div>
+        <p>${esc(apre)}</p>
+        <div class="assinatura-rodape"><b>BINAH DIGITAL</b><span class="traco"></span>Estúdio WA</div>
+      </section>`;
+  }
+
+  // 3. Visão geral: categorias com ao menos um selecionado
+  const catsComItem = CATALOGO.filter(cat => cat.servicos.some(sv => estado.sel[sv.id].on));
+  html += `
+    <section class="slide claro s-visao">
+      <div class="rotulo-util selo">Escopo</div>
+      <h2>Visão geral</h2>
+      <div class="grade-cat">
+        ${catsComItem.map((cat,i) => {
+          const q = cat.servicos.filter(sv => estado.sel[sv.id].on).length;
+          return `<div class="card-cat" style="--cc:${cat.cor}">
+            <div class="num">${String(i+1).padStart(2,"0")}</div>
+            <div class="titulo">${esc(cat.nome)}</div>
+            <div class="conta">${q} serviço(s)</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </section>`;
+
+  // 4. Um slide por serviço selecionado
+  itens.forEach(({sv, cat, s}) => {
+    html += `
+      <section class="slide claro s-serv" style="--c:${cat.cor}">
+        <div class="rotulo-util selo">${esc(cat.nome)}</div>
+        <div class="preco-serv">
+          <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(s.valor)}</div>
+          <div class="u">${esc(sv.unidade)}</div>
+        </div>
+        <h2>${esc(sv.nome)}</h2>
+        <div class="descricao">${esc(s.descricao)}</div>
+        <div class="inclusos">
+          ${sv.inclusos.map(it => `<span class="chip">${esc(it)}</span>`).join("")}
+        </div>
+      </section>`;
+  });
+
+  // 5. Investimento
+  let mensal = 0, unico = 0;
+  const linhas = itens.map(({sv, cat, s}) => {
+    const tot = (Number(s.qtd)||0) * (Number(s.valor)||0);
+    if(sv.recorrente) mensal += tot; else unico += tot;
+    return `<tr>
+      <td><span class="pt" style="--rc:${cat.cor}"></span><span class="sv">${esc(sv.nome)}</span>
+        <div class="tp">${sv.recorrente ? "Mensal recorrente" : "Pagamento único"}</div></td>
+      <td class="n">${s.qtd}</td>
+      <td class="n">${money(s.valor)}</td>
+      <td class="n">${money(tot)} ${sv.recorrente ? "/mês" : ""}</td>
+    </tr>`;
+  }).join("");
+
+  html += `
+    <section class="slide claro s-inv">
+      <div class="rotulo-util selo">Investimento</div>
+      <h2>Investimento</h2>
+      <table class="tabela">
+        <thead><tr><th>Serviço</th><th class="n">Qtd.</th><th class="n">Valor unitário</th><th class="n">Total</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>
+      <div class="inv-totais">
+        <div class="bloco mensal"><div class="r">Total mensal recorrente</div><div class="v">${money(mensal)}</div></div>
+        <div class="bloco unico"><div class="r">Total pagamento único</div><div class="v">${money(unico)}</div></div>
+      </div>
+      <div class="rodape-inv">Valores acrescidos dos impostos na emissão da nota fiscal. Prazo de vigência e condições comerciais detalhados no contrato de prestação de serviços.</div>
+    </section>`;
+
+  // 6. Próximos passos
+  html += `
+    <section class="slide escuro s-passos" style="--c:var(--cor-estudio)">
+      <div class="rotulo-util selo">Vamos começar</div>
+      <h2>Próximos passos</h2>
+      <div class="passos">
+        <div class="passo"><div class="n">01</div><p>Aprovação da proposta e alinhamento do escopo com a equipe.</p></div>
+        <div class="passo"><div class="n">02</div><p>Assinatura do contrato de prestação de serviços.</p></div>
+        <div class="passo"><div class="n">03</div><p>Início da produção conforme o cronograma combinado.</p></div>
+      </div>
+      <a class="wpp" href="https://wa.me/5511912877060">Falar no WhatsApp<span class="num">(11) 91287 7060</span></a>
+    </section>`;
+
+  deck.innerHTML = html;
+}
+
+/* ==========================================================================
+   Escala do preview para caber na coluna
+   offsetHeight ignora o transform, então dá para reservar a altura certa.
+   ========================================================================== */
+const preview = document.getElementById("preview");
+const sizer = document.getElementById("sizer");
+const escala = document.getElementById("deck-escala");
+
+function ajustarEscala(){
+  const larguraBase = estado.orientacao === "retrato" ? 794 : 1122;
+  const disp = preview.clientWidth - 40; // respeita o padding lateral
+  const s = Math.min(1, disp / larguraBase);
+  escala.style.transform = `scale(${s})`;
+  // A largura vem da base conhecida: o deck é flex column e sua offsetWidth
+  // pode colapsar. A altura por offsetHeight é confiável (ignora o transform).
+  sizer.style.width = (larguraBase * s) + "px";
+  sizer.style.height = (deck.offsetHeight * s) + "px";
+}
+window.addEventListener("resize", ajustarEscala);
+
+/* ==========================================================================
+   Geração do PDF: @page dinâmico + window.print
+   Sem rasterização, tipografia sai vetorial.
+   ========================================================================== */
+const estiloImpressao = document.createElement("style");
+estiloImpressao.id = "estilo-impressao";
+document.head.appendChild(estiloImpressao);
+
+function definirPagina(){
+  const regra = estado.orientacao === "retrato"
+    ? "@page { size: A4 portrait; margin: 0; }"
+    : "@page { size: 297mm 167mm; margin: 0; }";
+  estiloImpressao.textContent = regra;
+}
+
+document.getElementById("gerar").addEventListener("click", () => {
+  definirPagina();
+  const antes = document.title;
+  const cliente = document.getElementById("c-nome").value.trim();
+  const dataIso = document.getElementById("c-data").value || iso;
+  // O nome do arquivo sugerido no diálogo vem do title do documento
+  document.title = `Proposta-${kebab(cliente)}-${dataIso}`;
+  window.addEventListener("afterprint", function volta(){
+    document.title = antes;
+    window.removeEventListener("afterprint", volta);
+  });
+  window.print();
+});
+
+/* ==========================================================================
+   Arranque
+   ========================================================================== */
+renderCatalogo();
+aplicarRegrasEStatus();
+renderPreview();
+ajustarEscala();
+</script>
+</body>
+</html>
