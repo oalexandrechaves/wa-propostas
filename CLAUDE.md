@@ -7,7 +7,7 @@ anexa o logotipo do cliente, escolhe a orientação e baixa o PDF na hora.
 ## Arquitetura
 
 - Sem backend, sem banco de dados, sem autenticação.
-- HTML, CSS e JavaScript vanilla, tudo num único `index.html` com CSS e JS embutidos.
+- HTML, CSS e JavaScript vanilla, tudo num único `legado.html` com CSS e JS embutidos.
 - Sem framework, sem build step, sem bundler. O Vercel serve estático direto.
 - Estado só em memória. Sem `localStorage` e sem `sessionStorage`. Nada é persistido.
 - Ativos definitivos na pasta `assets/`, extraídos do deck original. Não regerar.
@@ -39,7 +39,7 @@ e não mais do disco pelo Vercel CLI.
 ## Gerador de orçamentos (orcamentos.html)
 
 Ferramenta interna separada, em `orcamentos.html`, para o Estúdio WA e a
-BINAH DIGITAL montarem orçamentos comerciais. Não substitui o `index.html`,
+BINAH DIGITAL montarem orçamentos comerciais. Não substitui o `legado.html`,
 é uma página adicional e independente.
 
 - Arquivo único, HTML, CSS e JavaScript vanilla, sem backend, sem build.
@@ -63,23 +63,21 @@ BINAH DIGITAL montarem orçamentos comerciais. Não substitui o `index.html`,
   final, e o painel de configuração não aparece na impressão.
 - WhatsApp de contato no slide de próximos passos: https://wa.me/5511912877060
 
-## Roteamento (vercel.json)
+## Ferramenta ativa e roteamento (vercel.json)
+
+A ferramenta ativa é o `orcamentos.html`, o gerador de orçamentos, servido na
+raiz. Ele é a página que deve responder em `/`.
+
+O gerador de propostas antigo foi renomeado de `index.html` para `legado.html`,
+com `git mv` para preservar o histórico. Continua preservado e intocado, apenas
+com outro nome. É acessível em `/legado`. Depende de CDN (Google Fonts,
+html2canvas, jsPDF) e não funciona offline, ao contrário do `orcamentos.html`.
 
 Há um `vercel.json` na raiz, aditivo, com dois rewrites:
 
-- `/legado` serve o `index.html`. Funciona, porque não existe arquivo em `/legado`.
-- `/` serve o `orcamentos.html`. Intenção: a ferramenta nova responder na raiz.
-
-O `index.html` é o gerador de propostas legado, preservado e intocado, e passa
-a ser acessível em `/legado`.
-
-Atenção à precedência na Vercel: arquivos estáticos são resolvidos antes dos
-rewrites. Como existe `index.html` na raiz, o path `/` é atendido pelo próprio
-`index.html` antes de o rewrite rodar, então o rewrite de `/` para
-`orcamentos.html` pode não ter efeito no deploy. Isso precisa ser confirmado na
-Vercel. Uma solução definitiva para a raiz, sem mover nem renomear arquivos,
-não é possível apenas por configuração, então fica registrado como pendência a
-decidir com o responsável antes de qualquer escalada.
+- `/` serve o `orcamentos.html`. Como não existe mais `index.html` na raiz, não
+  há arquivo estático competindo pelo path `/`, então o rewrite tem efeito.
+- `/legado` serve o `legado.html`. Funciona porque não existe arquivo em `/legado`.
 
 ## Identidade visual
 

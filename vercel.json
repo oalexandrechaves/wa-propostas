@@ -1,6 +1,6 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/orcamentos.html" },
-    { "source": "/legado", "destination": "/index.html" }
+    { "source": "/legado", "destination": "/legado.html" }
   ]
 }
