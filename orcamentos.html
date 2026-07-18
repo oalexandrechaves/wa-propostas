@@ -354,7 +354,8 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 
 /* ---- Slide de serviço ---- */
 .s-serv{padding:66px 84px;display:flex;flex-direction:column}
-.s-serv-texto{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:safe center}
+.s-serv-corpo{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:safe center}
+.s-serv-texto{min-width:0;display:flex;flex-direction:column}
 .s-serv .selo{color:var(--c)}
 .s-serv h2{font-family:var(--fonte-display);font-weight:800;font-size:56px;margin-top:14px;line-height:1.02;letter-spacing:-.02em;max-width:80%}
 .s-serv .descricao{font-size:23px;line-height:1.5;margin-top:22px;max-width:74%;color:var(--tinta)}
@@ -369,22 +370,22 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 }
 .s-serv .inclusos .chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
 .s-serv .preco-serv{
-  position:absolute;right:84px;top:66px;text-align:right;
+  flex:none;margin-top:34px;padding-top:26px;
+  border-top:2px solid color-mix(in srgb, var(--c) 35%, transparent);
+  display:flex;align-items:baseline;gap:14px;
 }
-.s-serv .preco-serv .v{font-family:var(--fonte-display);font-weight:800;font-size:44px;color:var(--c)}
-.s-serv .preco-serv .u{font-size:15px;color:var(--tinta-fraca);margin-top:2px}
+.s-serv .preco-serv .v{font-family:var(--fonte-display);font-weight:800;font-size:48px;line-height:1;color:var(--c)}
+.s-serv .preco-serv .u{font-size:16px;color:var(--tinta-fraca)}
 .slide.escuro .s-serv .preco-serv .u{color:var(--texto-fraco)}
 
 /* Slide de serviço com mosaico de fotos do estúdio, texto ao lado */
-.s-serv.com-fotos{flex-direction:row;align-items:center;gap:46px}
+.s-serv.com-fotos .s-serv-corpo{flex-direction:row;align-items:center;gap:46px}
 .s-serv.com-fotos .s-serv-texto{flex:1}
-.s-serv.com-fotos .preco-serv{position:static;text-align:left;margin-top:8px}
 .s-serv.com-fotos h2{max-width:none}
 .s-serv.com-fotos .descricao{max-width:none}
 .mosaico{flex:0 0 auto;width:392px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .mosaico img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:16px;display:block}
-#deck[data-orient=retrato] .s-serv.com-fotos{flex-direction:column;align-items:stretch}
-#deck[data-orient=retrato] .s-serv.com-fotos .preco-serv{position:absolute;right:84px;top:66px;text-align:right;margin-top:0}
+#deck[data-orient=retrato] .s-serv.com-fotos .s-serv-corpo{flex-direction:column;align-items:stretch}
 #deck[data-orient=retrato] .mosaico{width:100%;grid-template-columns:repeat(4,1fr);margin-top:34px}
 
 /* ---- Estrutura do Estúdio (slide fixo) ---- */
@@ -1072,20 +1073,22 @@ function renderPreview(){
       : "";
     html += `
       <section class="slide claro s-serv${sv.fotosEstudio ? " com-fotos" : ""}" style="--c:${cat.cor}">
-        <div class="s-serv-texto">
-          <div class="rotulo-util selo">${esc(cat.nome)}</div>
-          <div class="preco-serv">
-            <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(s.valor)}</div>
-            ${sv.aDefinir ? "" : `<div class="u">${esc(sv.unidade)}</div>`}
+        <div class="s-serv-corpo">
+          <div class="s-serv-texto">
+            <div class="rotulo-util selo">${esc(cat.nome)}</div>
+            <h2>${esc(sv.nome)}</h2>
+            <div class="descricao">${esc(s.descricao)}</div>
+            ${sv.horasIncluidas && s.horas > 0 ? `<div class="horas-inc">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação</div>` : ""}
+            <div class="inclusos">
+              ${sv.inclusos.map(it => `<span class="chip">${esc(it)}</span>`).join("")}
+            </div>
           </div>
-          <h2>${esc(sv.nome)}</h2>
-          <div class="descricao">${esc(s.descricao)}</div>
-          ${sv.horasIncluidas && s.horas > 0 ? `<div class="horas-inc">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação</div>` : ""}
-          <div class="inclusos">
-            ${sv.inclusos.map(it => `<span class="chip">${esc(it)}</span>`).join("")}
-          </div>
+          ${mosaico}
         </div>
-        ${mosaico}
+        <div class="preco-serv">
+          <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(s.valor)}</div>
+          ${sv.aDefinir ? "" : `<div class="u">${esc(sv.unidade)}</div>`}
+        </div>
       </section>`;
   });
 
