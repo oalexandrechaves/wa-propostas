@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ÉthnosPRO, Mídia Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark-1: #0E0E12;
+    --dark-2: #14141A;
+    --light-1: #F5F4F0;
+    --light-2: #FFFFFF;
+    --text-dark: #F7F7F9;
+    --text-light: #14141A;
+    --muted: #9A9AA5;
+    --muted-light: #6E6E78;
+    --pink: #E93369;
+    --blue: #6C8CFF;
+    --grad: linear-gradient(120deg, #E93369 0%, #6C8CFF 100%);
+    --radius: 20px;
+    --shadow: 0 18px 50px rgba(15, 15, 25, 0.10);
+    --shadow-dark: 0 22px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-light);
+    background: #2a2a30;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, .display { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+
+  /* ---------- Página / seção ---------- */
+  .page {
+    position: relative;
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 70px 90px;
+    overflow: hidden;
+  }
+
+  .page.dark {
+    background: var(--dark-1);
+    color: var(--text-dark);
+  }
+  .page.light {
+    background: var(--light-1);
+    color: var(--text-light);
+  }
+
+  /* separação visual entre páginas na tela */
+  .page + .page { border-top: 1px solid rgba(0,0,0,0.06); }
+
+  /* ---------- Marcadores e tipografia ---------- */
+  .marker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 26px;
+  }
+  .marker::before {
+    content: "";
+    width: 26px;
+    height: 2px;
+    background: var(--pink);
+    border-radius: 2px;
+  }
+
+  h1 {
+    font-size: 60px;
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  h2 {
+    font-size: 44px;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    max-width: 20ch;
+  }
+  .lead {
+    font-size: 19px;
+    line-height: 1.65;
+    color: var(--muted-light);
+    max-width: 60ch;
+    margin-top: 22px;
+  }
+  .dark .lead { color: var(--muted); }
+
+  .grad-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ---------- Cards ---------- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+    margin-top: 48px;
+  }
+  .card {
+    background: var(--light-2);
+    border: 1px solid rgba(15,15,25,0.06);
+    border-radius: var(--radius);
+    padding: 34px 30px;
+    box-shadow: var(--shadow);
+  }
+  .dark .card {
+    background: var(--dark-2);
+    border-color: rgba(255,255,255,0.06);
+    box-shadow: var(--shadow-dark);
+  }
+  .card .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: var(--grad);
+    margin-bottom: 22px;
+  }
+  .card .pill svg { width: 24px; height: 24px; stroke: #fff; }
+  .card h3 {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .card p {
+    font-size: 15.5px;
+    color: var(--muted-light);
+    line-height: 1.6;
+  }
+  .dark .card p { color: var(--muted); }
+
+  /* ---------- Pills / tags ---------- */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 15px;
+    border-radius: 999px;
+    background: rgba(233, 51, 105, 0.10);
+    color: var(--pink);
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- Capa (1) ---------- */
+  .cover { align-items: flex-start; }
+  .cover .glow {
+    position: absolute;
+    width: 900px; height: 900px;
+    top: -260px; right: -260px;
+    background: radial-gradient(circle, rgba(233,51,105,0.35) 0%, rgba(233,51,105,0.0) 62%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  .cover .glow-2 {
+    position: absolute;
+    width: 700px; height: 700px;
+    bottom: -300px; left: -200px;
+    background: radial-gradient(circle, rgba(108,140,255,0.22) 0%, rgba(108,140,255,0.0) 60%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  .cover .wordmark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+    margin-bottom: 40px;
+    position: relative;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .cover .wordmark img { width: 290px; height: auto; display: block; }
+  .cover h1 { font-size: 64px; max-width: 15ch; position: relative; }
+  .cover .sub {
+    font-size: 24px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 40ch;
+    margin-top: 34px;
+    position: relative;
+  }
+  .cover .footer-note {
+    position: absolute;
+    left: 90px; bottom: 60px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .cover .footer-note b { color: var(--text-dark); font-weight: 600; }
+
+  /* ---------- Ciclo (4) ---------- */
+  .cycle {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    margin-top: 50px;
+    align-items: stretch;
+  }
+  .step {
+    position: relative;
+    background: var(--dark-2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 18px;
+    padding: 28px 22px;
+    box-shadow: var(--shadow-dark);
+  }
+  .step .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    background: var(--grad);
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .step h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; line-height: 1.25; }
+  .step p { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 48px; right: -13px;
+    width: 18px; height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--blue));
+    z-index: 2;
+  }
+
+  /* ---------- Layout imagem + texto ---------- */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 44px;
+  }
+  .split.wide-left { grid-template-columns: 1.15fr 0.85fr; }
+  .split.narrow-left { grid-template-columns: 0.62fr 1fr; }
+
+  .shot {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--light-2);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(15,15,25,0.06);
+  }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption {
+    display: none;
+    min-height: 260px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted-light);
+    border: 2px dashed rgba(15,15,25,0.22);
+    border-radius: 18px;
+  }
+  .shot img.missing { display: none; }
+  .shot img.missing + figcaption { display: flex; }
+
+  /* moldura de celular para a conversa */
+  .phone {
+    max-width: 340px;
+    margin: 0 auto;
+    border-radius: 34px;
+    padding: 12px;
+    background: #101016;
+    box-shadow: 0 24px 60px rgba(15,15,25,0.20);
+    border: 1px solid rgba(15,15,25,0.10);
+  }
+  .phone .shot { border-radius: 24px; border: none; box-shadow: none; }
+  .phone .shot figcaption { border-radius: 24px; min-height: 480px; background: #f0eff2; }
+
+  /* grade 2x2 das conversas (prints verticais, inteiros sem corte) */
+  .convo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    gap: 16px;
+  }
+  .convo-grid .shot {
+    border-radius: 16px;
+    width: max-content;
+    background: #f0eff2;
+  }
+  .convo-grid .shot img {
+    display: block;
+    height: 340px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 16px;
+  }
+  .convo-grid .shot figcaption { min-height: 340px; width: 190px; }
+
+  .bullets { list-style: none; margin-top: 8px; }
+  .bullets li {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 26px;
+  }
+  .bullets li:last-child { margin-bottom: 0; }
+  .bullets li .b-ico {
+    position: absolute;
+    left: 0; top: 2px;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bullets li .b-ico svg { width: 15px; height: 15px; stroke: #fff; }
+  .bullets li b { display: block; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+  .bullets li span { font-size: 15px; color: var(--muted-light); }
+  .dark .bullets li span { color: var(--muted); }
+
+  /* ---------- Vantagens (10) ---------- */
+  .grid6 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 46px;
+  }
+  .adv {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--light-2);
+    border: 1px solid rgba(15,15,25,0.06);
+    border-radius: 16px;
+    padding: 26px 24px;
+    box-shadow: var(--shadow);
+  }
+  .adv .check {
+    flex: 0 0 auto;
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adv .check svg { width: 17px; height: 17px; stroke: #fff; }
+  .adv p { font-size: 15.5px; font-weight: 500; line-height: 1.45; color: var(--text-light); }
+
+  /* ---------- LGPD (9) ---------- */
+  .lgpd-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+    margin-top: 44px;
+  }
+  .compare { display: grid; gap: 18px; }
+  .compare .row {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--dark-2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+  .compare .row .mk {
+    flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-weight: 700;
+  }
+  .compare .row.no .mk { background: rgba(255,255,255,0.06); color: var(--muted); }
+  .compare .row.yes .mk { background: var(--grad); color: #fff; }
+  .compare .row b { display: block; font-size: 16px; margin-bottom: 3px; }
+  .compare .row span { font-size: 14px; color: var(--muted); }
+
+  /* ---------- Experimente (12) ---------- */
+  .cta { align-items: center; text-align: center; }
+  .cta .brand {
+    position: relative;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .cta .brand img { width: 290px; height: auto; display: block; margin: 0 auto; }
+  .cta .glow {
+    position: absolute;
+    width: 820px; height: 820px;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: radial-gradient(circle, rgba(233,51,105,0.28) 0%, rgba(233,51,105,0.0) 60%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  .cta h1 { font-size: 58px; position: relative; }
+  .cta .sub { font-size: 21px; color: var(--muted); margin-top: 24px; max-width: 44ch; position: relative; }
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 44px;
+    padding: 20px 42px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    background: var(--grad);
+    box-shadow: 0 18px 44px rgba(233,51,105,0.35);
+  }
+  .btn svg { width: 24px; height: 24px; fill: #fff; }
+  .cta .link {
+    position: relative;
+    margin-top: 26px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--blue);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+  }
+  .cta .footer-note {
+    position: absolute;
+    bottom: 54px; left: 0; right: 0;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .cta .footer-note b { color: var(--text-dark); font-weight: 600; }
+
+  /* ---------- Impressão / PDF ---------- */
+  @page { size: A4 landscape; margin: 0; }
+
+  @media print {
+    html, body { background: #fff; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page {
+      max-width: none;
+      width: 100%;
+      min-height: 100vh;
+      height: 100vh;
+      page-break-after: always;
+      break-after: page;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      padding: 42px 60px;
+      justify-content: center;
+    }
+    .page:last-child { page-break-after: auto; break-after: auto; }
+    .page + .page { border-top: none; }
+
+    /* alturas encolhidas para caber em A4 paisagem */
+    h1 { font-size: 44px; }
+    .cover h1 { font-size: 48px; }
+    .cta h1 { font-size: 44px; }
+    h2 { font-size: 34px; }
+    .lead { font-size: 16px; margin-top: 16px; }
+    .cards, .grid6 { margin-top: 30px; }
+    .card { padding: 24px 22px; }
+    .cover .wordmark { margin-bottom: 34px; }
+    .cover .sub, .cta .sub { font-size: 18px; margin-top: 20px; }
+    .split, .lgpd-grid, .cycle { margin-top: 28px; }
+    .cover .footer-note, .cta .footer-note { position: absolute; }
+    .phone { max-width: 280px; }
+    .convo-grid { gap: 12px; }
+    .convo-grid .shot img, .convo-grid .shot figcaption { height: 232px; min-height: 232px; }
+    .cta .brand { margin-bottom: 18px; }
+    .cover .wordmark img { width: 170px; }
+    .cta .brand img { width: 170px; height: auto; }
+  }
+
+  /* ---------- Responsivo tela ---------- */
+  @media (max-width: 900px) {
+    .page { padding: 54px 26px; }
+    h1, .cover h1, .cta h1 { font-size: 40px; }
+    h2 { font-size: 30px; }
+    .cards, .grid6 { grid-template-columns: 1fr; }
+    .cycle { grid-template-columns: 1fr; }
+    .step:not(:last-child)::after { display: none; }
+    .split, .split.wide-left, .split.narrow-left, .lgpd-grid { grid-template-columns: 1fr; gap: 34px; }
+    .cover .footer-note { left: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 1. CAPA ============ -->
+<section class="page dark cover">
+  <div class="glow"></div>
+  <div class="glow-2"></div>
+  <div class="wordmark">
+    <img src="assets/logo-completo.png" alt="ÉthnosPRO" onerror="this.outerHTML='ÉthnosPRO'">
+  </div>
+  <h1>O gabinete digital que trabalha por você</h1>
+  <p class="sub">Transforme cada conversa no WhatsApp em base de dados sua, organizada, consentida e pronta para agir.</p>
+  <div class="footer-note">Uma plataforma <b>BINAH DIGITAL</b></div>
+</section>
+
+<!-- ============ 2. O PROBLEMA ============ -->
+<section class="page light">
+  <div class="marker">Bloco 01 · O Problema</div>
+  <h2>O WhatsApp virou o gabinete</h2>
+  <p class="lead">É o canal mais direto entre você e o cidadão, com taxa de leitura que nenhum outro meio alcança. O problema é que, na conversa solta, tudo se perde: os pedidos, os nomes, as regiões e o histórico. O gabinete escuta a população, mas não guarda nada disso como dado.</p>
+  <div class="cards">
+    <div class="card">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      <h3>Comunicação direta</h3>
+      <p>A mensagem chega direto no bolso do eleitor, sem intermediários e sem depender de algoritmo de rede social.</p>
+    </div>
+    <div class="card">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+      <h3>Alta taxa de leitura</h3>
+      <p>Praticamente toda mensagem enviada é aberta e lida, algo que e-mail e panfleto jamais entregam.</p>
+    </div>
+    <div class="card">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+      <h3>Escuta da população</h3>
+      <p>Cada conversa é uma demanda real da rua, mas sem estrutura ela desaparece assim que a tela fecha.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. O QUE É ============ -->
+<section class="page light">
+  <div class="marker">Bloco 02 · ÉthnosPRO</div>
+  <h2>Uma IA que atende, cadastra e organiza</h2>
+  <p class="lead">O ÉthnosPRO fica dentro do seu WhatsApp e conversa com quem chama. Ele responde de forma humana, cadastra o cidadão sem parecer formulário e organiza tudo em um painel só seu, dentro de um ambiente isolado por gabinete.</p>
+  <div class="cards">
+    <div class="card">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></span>
+      <h3>IA no WhatsApp</h3>
+      <p>Atende cada contato na hora, com linguagem natural, e coleta os dados durante a própria conversa.</p>
+    </div>
+    <div class="card">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg></span>
+      <h3>Dashboard analítico</h3>
+      <p>Tudo o que a IA coleta vira gráfico, filtro e ranking, prontos para orientar suas decisões.</p>
+    </div>
+    <div class="card">
+      <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+      <h3>Ambiente isolado</h3>
+      <p>Cada gabinete tem sua própria base, protegida e separada. Seus dados não se misturam com os de ninguém.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. O CICLO ============ -->
+<section class="page dark">
+  <div class="marker">Bloco 03 · Como funciona</div>
+  <h2>Do primeiro oi ao dado que <span class="grad-text">trabalha por você</span></h2>
+  <div class="cycle">
+    <div class="step">
+      <div class="num">1</div>
+      <h3>Você divulga o número</h3>
+      <p>O político anuncia o WhatsApp oficial nas redes, no material de campanha e no dia a dia.</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <h3>O cidadão chama</h3>
+      <p>Quem tem uma demanda ou quer apoiar manda a primeira mensagem, por conta própria.</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <h3>A IA conversa</h3>
+      <p>O ÉthnosPRO responde, entende o pedido e coleta os dados sem parecer um formulário.</p>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <h3>Alimenta a base</h3>
+      <p>Cada informação entra na plataforma protegida, com o consentimento LGPD registrado no ato.</p>
+    </div>
+    <div class="step">
+      <div class="num">5</div>
+      <h3>Você age com dados</h3>
+      <p>O gabinete lê o dashboard e faz comunicação dirigida só para quem entrou em contato e autorizou.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. CONVERSA REAL ============ -->
+<section class="page light">
+  <div class="marker">Bloco 04 · Conversa real</div>
+  <h2>Parece papo. É cadastro.</h2>
+  <div class="split wide-left" style="align-items:center">
+    <div class="convo-grid">
+      <figure class="shot">
+        <img src="assets/conversa-1.png" alt="Conversa de WhatsApp, parte 1" onerror="this.classList.add('missing')">
+        <figcaption>Conversa, parte 1<br>(assets/conversa-1.png)</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/conversa-2.png" alt="Conversa de WhatsApp, parte 2" onerror="this.classList.add('missing')">
+        <figcaption>Conversa, parte 2<br>(assets/conversa-2.png)</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/conversa-3.png" alt="Conversa de WhatsApp, parte 3" onerror="this.classList.add('missing')">
+        <figcaption>Conversa, parte 3<br>(assets/conversa-3.png)</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/conversa-4.png" alt="Conversa de WhatsApp, parte 4" onerror="this.classList.add('missing')">
+        <figcaption>Conversa, parte 4<br>(assets/conversa-4.png)</figcaption>
+      </figure>
+    </div>
+    <div>
+      <ul class="bullets">
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Tom humano</b>
+          <span>A IA conversa com naturalidade, sem robotização, e mantém o cidadão à vontade do início ao fim.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Cadastro sem parecer formulário</b>
+          <span>Nome, bairro e demanda são coletados no fio da conversa, sem aquela sensação de interrogatório.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Consentimento LGPD no meio</b>
+          <span>A autorização de uso dos dados é pedida de forma clara, dentro do papo, e fica registrada.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. O PAINEL ============ -->
+<section class="page light">
+  <div class="marker">Bloco 05 · O painel</div>
+  <h2>Tudo o que foi conversado, agora em números</h2>
+  <div class="split wide-left">
+    <figure class="shot">
+      <img src="assets/dashboard.png" alt="Dashboard analítico do ÉthnosPRO" onerror="this.classList.add('missing')">
+      <figcaption>Print do painel / dashboard<br>(assets/dashboard.png)</figcaption>
+    </figure>
+    <div>
+      <ul class="bullets">
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Cidadãos cadastrados</b>
+          <span>O total de pessoas que já falaram com o gabinete, sempre atualizado.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Demandas e categorias</b>
+          <span>Cada pedido é classificado por tema, mostrando o que a população mais cobra.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Consentimento e filtros</b>
+          <span>Você vê quem autorizou o contato e filtra a base por região, tema e perfil.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. GEOGRAFIA ============ -->
+<section class="page light">
+  <div class="marker">Bloco 06 · Geografia</div>
+  <h2>Saiba de onde vem o seu apoio</h2>
+  <div class="split wide-left">
+    <figure class="shot">
+      <img src="assets/dashboard2.png" alt="Ranking de bairros e zonas com mais demandas" onerror="this.classList.add('missing')">
+      <figcaption>Print do ranking de bairros e zonas<br>(assets/dashboard2.png)</figcaption>
+    </figure>
+    <div>
+      <p class="lead" style="margin-top:0">O ÉthnosPRO organiza os contatos por bairro e por zona, mostrando em ranking onde estão as maiores concentrações de demandas e de apoiadores.</p>
+      <ul class="bullets" style="margin-top:30px">
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Priorize territórios</b>
+          <span>Concentre agenda e recursos onde a população mais chama.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Enxergue oportunidades</b>
+          <span>Identifique regiões pouco atendidas e planeje a próxima ação com base em dado, não em achismo.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. FICHA DO CIDADÃO ============ -->
+<section class="page light">
+  <div class="marker">Bloco 07 · Ficha do cidadão</div>
+  <h2>Cada contato, um perfil completo</h2>
+  <div class="split wide-left">
+    <figure class="shot">
+      <img src="assets/ficha.png" alt="Ficha detalhada do cidadão" onerror="this.classList.add('missing')">
+      <figcaption>Print da ficha do cidadão<br>(assets/ficha.png)</figcaption>
+    </figure>
+    <div>
+      <ul class="bullets">
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Perfil completo</b>
+          <span>Nome, região, demandas e histórico da conversa, tudo reunido num só lugar.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Dados protegidos</b>
+          <span>As informações ficam no ambiente isolado do gabinete, com acesso controlado.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Telefone mascarado</b>
+          <span>O número aparece parcialmente oculto, reforçando a privacidade de quem procurou você.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. CIDADÃOS ============ -->
+<section class="page light">
+  <div class="marker">Bloco 08 · Cidadãos</div>
+  <h2>A base inteira, numa lista só</h2>
+  <div class="split wide-left">
+    <figure class="shot">
+      <img src="assets/todos-os-cadastros.png" alt="Lista completa de cidadãos cadastrados" onerror="this.classList.add('missing')">
+      <figcaption>Print da lista de cidadãos<br>(assets/todos-os-cadastros.png)</figcaption>
+    </figure>
+    <div>
+      <ul class="bullets">
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Todo mundo num lugar só</b>
+          <span>Cada cidadão que falou com o gabinete aparece na lista, com nome, região e demanda.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Busca e filtros na hora</b>
+          <span>Encontre qualquer contato e recorte a base por bairro, tema ou período em segundos.</span>
+        </li>
+        <li>
+          <span class="b-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <b>Pronta para agir</b>
+          <span>Da lista você abre a ficha completa e parte para a comunicação dirigida, sempre com consentimento.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. LGPD / PROTEÇÃO ============ -->
+<section class="page dark">
+  <div class="marker">Bloco 09 · Proteção de dados</div>
+  <h2>Base própria, consentida e sua</h2>
+  <div class="lgpd-grid">
+    <p class="lead" style="margin-top:0">Nada de lista comprada nem disparo em massa para desconhecidos. No ÉthnosPRO, sua base é formada apenas por quem procurou o gabinete e autorizou o contato. Isso respeita a LGPD e vira vantagem competitiva: comunicação legítima, com quem realmente quer ouvir você.</p>
+    <div class="compare">
+      <div class="row no">
+        <span class="mk">✕</span>
+        <div><b>Lista comprada e disparo em massa</b><span>Contatos frios, sem consentimento e com risco jurídico.</span></div>
+      </div>
+      <div class="row yes">
+        <span class="mk">✓</span>
+        <div><b>Base própria e consentida</b><span>Só quem procurou e autorizou. Segura, legítima e exclusivamente sua.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11. VANTAGENS ============ -->
+<section class="page light">
+  <div class="marker">Bloco 10 · Vantagens</div>
+  <h2>Por que o ÉthnosPRO faz diferença</h2>
+  <div class="grid6">
+    <div class="adv"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><p>Cadastro completo e automático a cada conversa</p></div>
+    <div class="adv"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><p>Classificação de demandas por categoria</p></div>
+    <div class="adv"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><p>Dashboard com filtros por região e faixa etária</p></div>
+    <div class="adv"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><p>Consentimento LGPD registrado no ato</p></div>
+    <div class="adv"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><p>Base segmentável para comunicação dirigida</p></div>
+    <div class="adv"><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><p>Ambiente isolado e protegido por gabinete</p></div>
+  </div>
+</section>
+
+<!-- ============ 12. EXPERIMENTE ============ -->
+<section class="page dark cta">
+  <div class="glow"></div>
+  <div class="brand">
+    <img src="assets/logo-completo.png" alt="ÉthnosPRO" onerror="this.outerHTML='ÉthnosPRO'">
+  </div>
+  <div class="marker" style="justify-content:center">Experimente agora</div>
+  <h1>Converse com o <span class="grad-text">ÉthnosPRO</span></h1>
+  <p class="sub">Mande uma mensagem e veja, na prática, como cada conversa vira dado organizado e pronto para trabalhar por você.</p>
+  <a class="btn" href="https://wa.me/5511920947060">
+    <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.76.46 3.45 1.34 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24a8.2 8.2 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24m4.74 10.42c-.26-.13-1.53-.76-1.77-.84-.24-.09-.41-.13-.59.13-.17.26-.67.84-.82 1.02-.15.17-.3.2-.56.07-.26-.13-1.1-.4-2.09-1.29-.77-.69-1.29-1.53-1.44-1.79-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.46.13-.15.17-.26.26-.43.09-.17.04-.33-.02-.46-.07-.13-.59-1.42-.81-1.94-.21-.51-.43-.44-.59-.45l-.5-.01c-.17 0-.46.06-.7.33-.24.26-.92.9-.92 2.19 0 1.29.94 2.54 1.07 2.71.13.17 1.85 2.82 4.48 3.96.63.27 1.11.43 1.49.55.63.2 1.2.17 1.65.1.5-.07 1.53-.62 1.75-1.23.22-.6.22-1.12.15-1.23-.07-.11-.24-.17-.5-.3"/></svg>
+    Testar no WhatsApp
+  </a>
+  <div class="footer-note">ÉthnosPRO · uma plataforma <b>BINAH DIGITAL</b></div>
+</section>
+
+</body>
+</html>
