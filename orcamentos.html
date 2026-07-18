@@ -723,8 +723,10 @@ function renderCatalogo(){
       wrap.className = "servico" + (s.on ? " aberto" : "") + (desab ? " desabilitado" : "");
       wrap.style.setProperty("--c", cat.cor);
 
-      const precoTxt = sv.aDefinir && !(s.valor > 0)
-        ? `<div class="preco definir">a definir</div>`
+      const precoTxt = sv.aDefinir
+        ? (s.valor > 0
+            ? `<div class="preco">${money(s.valor)}</div>`
+            : `<div class="preco definir">a definir</div>`)
         : `<div class="preco">${money(s.valor)} ${esc(sv.unidade)}</div>`;
 
       wrap.innerHTML = `
@@ -973,7 +975,7 @@ function renderPreview(){
           <div class="rotulo-util selo">${esc(cat.nome)}</div>
           <div class="preco-serv">
             <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(s.valor)}</div>
-            <div class="u">${esc(sv.unidade)}</div>
+            ${sv.aDefinir ? "" : `<div class="u">${esc(sv.unidade)}</div>`}
           </div>
           <h2>${esc(sv.nome)}</h2>
           <div class="descricao">${esc(s.descricao)}</div>
