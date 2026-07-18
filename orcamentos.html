@@ -37,6 +37,7 @@
   --cor-ethnos:#22E07B;    /* verde */
   --cor-web:#2E7BFF;       /* azul */
   --cor-imprensa:#22D3EE;  /* ciano */
+  --cor-audiovisual:#FF3B3B;/* vermelho */
 
   --alerta:#FFB020;
 
@@ -579,6 +580,14 @@ const CATALOGO = [
       { id:"podcast-eventos", nome:"Podcast em feiras e eventos", valor:0, recorrente:false, unidade:"a definir", aDefinir:true,
         descricao:"Cobertura em podcast durante feiras e eventos, capturando conteúdo ao vivo.",
         inclusos:["Escopo e valor a definir conforme a demanda"] }
+    ]
+  },
+  {
+    id:"audiovisual", nome:"Produção Audiovisual", cor:"var(--cor-audiovisual)",
+    servicos:[
+      { id:"gravacao-curso", nome:"Gravação de curso e criativos", valor:0, recorrente:false, unidade:"a definir", aDefinir:true, fotosEstudio:true,
+        descricao:"Gravação de cursos e criativos no estúdio, com estrutura completa de produção audiovisual e direção de conteúdo.",
+        inclusos:["Gravação com teleprompter","Coprodução","Suporte técnico","Cenário adaptável"] }
     ]
   },
   {
