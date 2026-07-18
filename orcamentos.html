@@ -362,7 +362,7 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .slide.escuro .s-serv .descricao{color:var(--texto-claro)}
 .s-serv .horas-inc{margin-top:18px;font-family:var(--fonte-corpo);font-weight:600;font-size:18px;line-height:1.3;letter-spacing:.02em;color:var(--c)}
 .s-serv .inclusos{margin-top:0;display:flex;flex-wrap:wrap;gap:12px;padding-top:30px}
-#deck[data-orient=retrato] .s-serv .inclusos{flex-direction:column}
+#deck[data-orient=retrato] .s-serv .inclusos{display:grid;grid-template-columns:1fr 1fr}
 .s-serv .inclusos .chip{
   display:flex;align-items:center;gap:10px;
   border:1px solid var(--c);border-radius:999px;padding:9px 18px;font-size:15px;
@@ -378,15 +378,18 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .s-serv .preco-serv .u{font-size:16px;color:var(--tinta-fraca)}
 .slide.escuro .s-serv .preco-serv .u{color:var(--texto-fraco)}
 
-/* Slide de serviço com mosaico de fotos do estúdio, texto ao lado */
-.s-serv.com-fotos .s-serv-corpo{flex-direction:row;align-items:center;gap:46px}
-.s-serv.com-fotos .s-serv-texto{flex:1}
+/* Slide de serviço com mosaico de fotos do estúdio, texto ao lado.
+   O mosaico preenche a altura disponível (2x2 na paisagem) para nunca
+   estourar a folha, com recorte pelo object-fit em vez de distorcer. */
+.s-serv.com-fotos .s-serv-corpo{flex-direction:row;align-items:stretch;gap:46px;min-height:0}
+.s-serv.com-fotos .s-serv-texto{flex:1;justify-content:center}
 .s-serv.com-fotos h2{max-width:none}
 .s-serv.com-fotos .descricao{max-width:none}
-.mosaico{flex:0 0 auto;width:392px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.mosaico img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:16px;display:block}
+.mosaico{flex:0 0 auto;width:392px;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px}
+.mosaico img{width:100%;height:100%;min-height:0;object-fit:cover;border-radius:16px;display:block}
 #deck[data-orient=retrato] .s-serv.com-fotos .s-serv-corpo{flex-direction:column;align-items:stretch}
-#deck[data-orient=retrato] .mosaico{width:100%;grid-template-columns:repeat(4,1fr);margin-top:34px}
+#deck[data-orient=retrato] .mosaico{width:100%;grid-template-columns:repeat(4,1fr);grid-template-rows:auto;margin-top:34px}
+#deck[data-orient=retrato] .mosaico img{height:auto}
 
 /* ---- Estrutura do Estúdio (slide fixo) ---- */
 .s-estudio{
@@ -474,6 +477,73 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
   padding:16px 28px;border-radius:14px;text-decoration:none;
 }
 .wpp .num{font-weight:600}
+
+/* ==========================================================================
+   Proporção no A4 retrato
+   A folha retrato (794x1122) é bem mais alta que a paisagem, então o conteúdo
+   dimensionado para a paisagem fica pequeno e flutuando no meio. Aqui os
+   elementos ganham presença (fontes, cards e respiros maiores) e os grupos
+   relacionados ficam próximos, sem buracos e sem espalhar para os extremos.
+   ========================================================================== */
+/* Capa */
+#deck[data-orient=retrato] .s-capa{padding:96px 74px}
+#deck[data-orient=retrato] .s-capa h1{font-size:112px;margin-top:32px}
+#deck[data-orient=retrato] .s-capa .cliente{margin-top:56px}
+#deck[data-orient=retrato] .s-capa .cliente .nome{font-size:44px}
+#deck[data-orient=retrato] .s-capa .cliente .empresa{font-size:24px}
+#deck[data-orient=retrato] .s-capa .barra{margin-top:42px;width:140px}
+
+/* Apresentação */
+#deck[data-orient=retrato] .s-apre{padding:96px 80px}
+#deck[data-orient=retrato] .s-apre p{font-size:46px;margin-top:36px}
+
+/* Visão geral */
+#deck[data-orient=retrato] .s-visao{padding:88px 74px}
+#deck[data-orient=retrato] .s-visao h2{font-size:70px}
+#deck[data-orient=retrato] .grade-cat{margin-top:56px;gap:26px}
+#deck[data-orient=retrato] .card-cat{min-height:184px;padding:34px 30px}
+#deck[data-orient=retrato] .card-cat .num{font-size:42px}
+#deck[data-orient=retrato] .card-cat .titulo{font-size:27px;margin-top:16px}
+#deck[data-orient=retrato] .card-cat .conta{font-size:16px;margin-top:14px}
+
+/* Slide de serviço: agrupa preço junto ao conteúdo e centraliza o bloco */
+#deck[data-orient=retrato] .s-serv{justify-content:safe center;padding:82px 74px}
+#deck[data-orient=retrato] .s-serv-corpo{flex:none}
+#deck[data-orient=retrato] .s-serv h2{font-size:66px;max-width:100%;margin-top:18px}
+#deck[data-orient=retrato] .s-serv .descricao{font-size:27px;max-width:100%;margin-top:28px}
+#deck[data-orient=retrato] .s-serv .horas-inc{font-size:21px;margin-top:22px}
+#deck[data-orient=retrato] .s-serv .inclusos{padding-top:38px;gap:14px}
+#deck[data-orient=retrato] .s-serv .inclusos .chip{font-size:17px;padding:11px 22px}
+#deck[data-orient=retrato] .s-serv .preco-serv{margin-top:42px;padding-top:32px}
+#deck[data-orient=retrato] .s-serv .preco-serv .v{font-size:60px}
+#deck[data-orient=retrato] .s-serv .preco-serv .u{font-size:18px}
+/* Serviço com fotos é mais cheio: mosaico paisagem e texto contido, cabe o preço */
+#deck[data-orient=retrato] .s-serv.com-fotos h2{font-size:58px}
+#deck[data-orient=retrato] .s-serv.com-fotos .descricao{font-size:24px}
+#deck[data-orient=retrato] .s-serv.com-fotos .mosaico{margin-top:28px}
+#deck[data-orient=retrato] .s-serv.com-fotos .mosaico img{aspect-ratio:4/3}
+
+/* Investimento */
+#deck[data-orient=retrato] .s-inv{padding:82px 66px}
+#deck[data-orient=retrato] .s-inv h2{font-size:62px}
+#deck[data-orient=retrato] .s-inv .tabela{font-size:19px;margin-top:40px}
+#deck[data-orient=retrato] .s-inv .tabela thead th{font-size:13px;padding:0 12px 14px}
+#deck[data-orient=retrato] .s-inv .tabela tbody td{padding:17px 12px}
+#deck[data-orient=retrato] .s-inv .tabela tbody td .tp{font-size:14px}
+#deck[data-orient=retrato] .inv-totais{margin-top:36px;gap:22px}
+#deck[data-orient=retrato] .inv-totais .bloco{padding:28px 26px}
+#deck[data-orient=retrato] .inv-totais .bloco .r{font-size:15px}
+#deck[data-orient=retrato] .inv-totais .bloco .v{font-size:44px}
+#deck[data-orient=retrato] .s-inv .rodape-inv{font-size:15px;padding-top:30px;max-width:100%}
+
+/* Próximos passos */
+#deck[data-orient=retrato] .s-passos{padding:82px 74px}
+#deck[data-orient=retrato] .s-passos h2{font-size:66px}
+#deck[data-orient=retrato] .passos{margin-top:50px;gap:20px}
+#deck[data-orient=retrato] .passo{padding:32px 30px}
+#deck[data-orient=retrato] .passo .n{font-size:46px}
+#deck[data-orient=retrato] .passo p{font-size:20px;margin-top:16px}
+#deck[data-orient=retrato] .wpp{font-size:22px;margin-top:50px;padding:18px 32px}
 
 /* Estado vazio do preview */
 .vazio{
