@@ -127,6 +127,12 @@ input[type=text],input[type=date],textarea,input.num,input.moeda{
 }
 input:focus,textarea:focus{outline:none;border-color:var(--cor-marca)}
 textarea{resize:vertical;min-height:86px;line-height:1.5}
+/* Campo de data alinhado ao painel escuro, com ícone de calendário em vermelho */
+input[type=date]{color-scheme:dark;cursor:pointer}
+input[type=date]::-webkit-calendar-picker-indicator{
+  cursor:pointer;
+  filter:invert(28%) sepia(89%) saturate(3200%) hue-rotate(348deg) brightness(92%) contrast(92%);
+}
 
 /* Seletor de orientação */
 .orient{display:flex;gap:10px}
