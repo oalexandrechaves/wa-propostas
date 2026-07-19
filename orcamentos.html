@@ -420,18 +420,18 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .s-estudio .est-barra2{width:40px;height:7px;border-radius:99px;background:var(--acc-grad)}
 /* Lista em duas colunas equilibradas (multicol): itens longos quebram a linha
    e ficam inteiros na coluna, sem estourar a borda do painel. */
-.s-estudio .est-lista{margin-top:16px;flex:1;column-count:2;column-gap:26px}
-.s-estudio .est-lista .it{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--acc-line);break-inside:avoid}
+.s-estudio .est-lista{margin-top:14px;flex:1;column-count:2;column-gap:24px}
+.s-estudio .est-lista .it{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--acc-line);break-inside:avoid}
 .s-estudio .est-lista .it .mk{width:9px;height:9px;flex:none;margin-top:5px;border-radius:3px;background:var(--acc-grad)}
 .s-estudio .est-lista .it span{min-width:0;font-size:14px;line-height:1.3;color:#2A1F26;overflow-wrap:break-word}
 /* A4 retrato: mosaico em cima, equipamentos embaixo em duas colunas */
 #deck[data-orient=retrato] .s-estudio{flex-direction:column;gap:0;padding:52px 50px}
 #deck[data-orient=retrato] .s-estudio .est-main{flex:none}
 #deck[data-orient=retrato] .s-estudio h2{font-size:46px}
-#deck[data-orient=retrato] .s-estudio .est-mosaico{flex:none;height:520px;margin-top:26px}
+#deck[data-orient=retrato] .s-estudio .est-mosaico{flex:none;height:492px;margin-top:26px}
 #deck[data-orient=retrato] .s-estudio .est-painel{width:auto;flex:1;margin-top:26px;border-radius:22px;padding:28px 32px}
 #deck[data-orient=retrato] .s-estudio .est-lista{margin-top:14px;column-gap:40px}
-#deck[data-orient=retrato] .s-estudio .est-lista .it{padding:8px 0}
+#deck[data-orient=retrato] .s-estudio .est-lista .it{padding:6px 0}
 #deck[data-orient=retrato] .s-estudio .est-lista .it span{font-size:14.5px}
 
 /* ---- Investimento ---- */
@@ -1100,7 +1100,11 @@ function renderPreview(){
       "Microfones profissionais Rode PodMic",
       "Iluminação profissional com Octabox",
       "Iluminação RGB com cores personalizáveis",
-      "Dois cenários: bancada para até 5 pessoas e espaço de poltronas para entrevistas"
+      "Dois cenários: bancada para até 5 pessoas e espaço de poltronas para entrevistas",
+      "Copa completa com cortesias: café, água, biscoitos e balas",
+      "Banheiro privativo",
+      "Ar condicionado",
+      "Área de apoio confortável dentro do estúdio para os convidados que não gravam acompanharem as gravações"
     ];
     html += `
       <section class="slide claro s-estudio">
