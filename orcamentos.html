@@ -1133,6 +1133,7 @@ function renderPreview(){
 
   // 4. Um slide por serviço selecionado
   itens.forEach(({sv, cat, s}) => {
+    const totServ = (Number(s.qtd)||0) * (Number(s.valor)||0);
     const mosaico = sv.fotosEstudio
       ? `<div class="mosaico">
           <img src="${FOTOS_ESTUDIO.f1}" alt="">
@@ -1156,7 +1157,7 @@ function renderPreview(){
           ${mosaico}
         </div>
         <div class="preco-serv">
-          <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(s.valor)}</div>
+          <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(totServ)}</div>
           ${sv.aDefinir ? "" : `<div class="u">${esc(sv.unidade)}</div>`}
         </div>
       </section>`;
