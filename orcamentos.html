@@ -1026,6 +1026,14 @@ elCatalogo.addEventListener("input", (e) => {
   document.getElementById(idc).addEventListener("input", () => { renderPreview(); ajustarEscala(); });
 });
 
+// Abre o calendário ao clicar em qualquer parte do campo de data, com fallback
+const campoData = document.getElementById("c-data");
+campoData.addEventListener("click", () => {
+  if(typeof campoData.showPicker === "function"){
+    try { campoData.showPicker(); } catch(e) {}
+  }
+});
+
 // Orientação
 document.getElementById("orient").addEventListener("click", (e) => {
   const b = e.target.closest("button");
