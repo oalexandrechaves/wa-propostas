@@ -681,6 +681,9 @@ const FOTOS_ESTUDIO = {
      id         identificador único
      nome       rótulo exibido
      valor      valor padrão em reais (0 quando "a definir")
+     meses      só nos planos de podcast: meses fixos do plano (1, 3, 6, 12).
+                Nesses planos o valor é por episódio e o total é
+                meses x episódios por mês x valor por episódio.
      recorrente true = entra no total mensal, false = pagamento único
      unidade    rótulo do preço (por mês, por episódio, pagamento único, ...)
      qtd        quantidade padrão
@@ -703,18 +706,18 @@ const CATALOGO = [
   {
     id:"estudio", nome:"Estúdio e Podcast", cor:"var(--cor-estudio)",
     servicos:[
-      { id:"podcast-anual", nome:"Podcast, plano anual", valor:1588, recorrente:true, unidade:"por mês", incompat:outros("podcast-anual"),
-        descricao:"Programa de podcast no plano anual, com quatro episódios mensais de uma hora de gravação e a melhor condição por episódio.",
-        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 397,00 por episódio"] },
-      { id:"podcast-semestral", nome:"Podcast, plano semestral", valor:1708, recorrente:true, unidade:"por mês", incompat:outros("podcast-semestral"),
-        descricao:"Programa de podcast no plano semestral, com quatro episódios mensais de uma hora de gravação.",
-        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 427,00 por episódio"] },
-      { id:"podcast-trimestral", nome:"Podcast, plano trimestral", valor:1828, recorrente:true, unidade:"por mês", incompat:outros("podcast-trimestral"),
-        descricao:"Programa de podcast no plano trimestral, com quatro episódios mensais de uma hora de gravação.",
-        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 457,00 por episódio"] },
-      { id:"podcast-mensal", nome:"Podcast, plano mensal", valor:1988, recorrente:true, unidade:"por mês", incompat:outros("podcast-mensal"),
-        descricao:"Programa de podcast no plano mensal, com quatro episódios mensais de uma hora de gravação e total flexibilidade.",
-        inclusos:["4 episódios mensais","Gravação de 1h00 por episódio","Equivalente a R$ 497,00 por episódio"] },
+      { id:"podcast-anual", nome:"Podcast, plano anual", valor:397, meses:12, recorrente:true, unidade:"por episódio", incompat:outros("podcast-anual"),
+        descricao:"Programa de podcast no plano anual, com doze meses de gravação de uma hora por episódio e a melhor condição por episódio.",
+        inclusos:["Gravação de 1h00 por episódio"] },
+      { id:"podcast-semestral", nome:"Podcast, plano semestral", valor:427, meses:6, recorrente:true, unidade:"por episódio", incompat:outros("podcast-semestral"),
+        descricao:"Programa de podcast no plano semestral, com seis meses de gravação de uma hora por episódio.",
+        inclusos:["Gravação de 1h00 por episódio"] },
+      { id:"podcast-trimestral", nome:"Podcast, plano trimestral", valor:457, meses:3, recorrente:true, unidade:"por episódio", incompat:outros("podcast-trimestral"),
+        descricao:"Programa de podcast no plano trimestral, com três meses de gravação de uma hora por episódio.",
+        inclusos:["Gravação de 1h00 por episódio"] },
+      { id:"podcast-mensal", nome:"Podcast, plano mensal", valor:497, meses:1, recorrente:true, unidade:"por episódio", incompat:outros("podcast-mensal"),
+        descricao:"Programa de podcast no plano mensal, com gravação de uma hora por episódio mês a mês e total flexibilidade.",
+        inclusos:["Gravação de 1h00 por episódio"] },
       { id:"podcast-avulso", nome:"Podcast avulso", valor:597, recorrente:false, unidade:"por episódio", incompat:outros("podcast-avulso"),
         descricao:"Episódio avulso de podcast, ideal para testar o formato antes de fechar um plano recorrente.",
         inclusos:["1 episódio de 1h00 de gravação"] },
@@ -823,7 +826,7 @@ const estado = {
 };
 // Inicializa a seleção com os padrões do catálogo
 Object.values(INDICE).forEach(({sv}) => {
-  estado.sel[sv.id] = { on:false, qtd:1, valor:sv.valor, descricao:sv.descricao, horas:sv.horasPadrao || 0, pagamento:formaPadrao(sv) };
+  estado.sel[sv.id] = { on:false, qtd:sv.meses ? 4 : 1, valor:sv.valor, descricao:sv.descricao, horas:sv.horasPadrao || 0, pagamento:formaPadrao(sv) };
 });
 
 // Data padrão: hoje
@@ -836,6 +839,12 @@ document.getElementById("c-data").value = iso;
    ========================================================================== */
 const brl = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
 const money = (n) => brl.format(n || 0);
+// Unidades faturáveis de um serviço. Nos planos de podcast, o campo qtd é o
+// número de episódios por mês e as unidades totais são meses x episódios por
+// mês (o total de episódios do plano). Nos demais serviços, é a quantidade.
+const unidadesServico = (sv, s) => (sv.meses || 1) * (Number(s.qtd)||0);
+// Total do serviço: unidades faturáveis x valor unitário (por episódio nos planos).
+const totalServico = (sv, s) => unidadesServico(sv, s) * (Number(s.valor)||0);
 // Formata um número como moeda para o campo de entrada (sem o símbolo R$),
 // milhar com ponto e duas casas com vírgula. Ex.: 1588 -> "1.588,00".
 const moedaInput = (n) => (Number(n)||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -897,7 +906,7 @@ function renderCatalogo(){
         ${sv.horasIncluidas && s.horas > 0 ? `<div class="nota-inclui">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação. Valor fechado por projeto.</div>` : ""}
         <div class="editaveis">
           <div class="linha-nums">
-            <label><span>Quantidade</span>
+            <label><span>${sv.meses ? "Episódios por mês" : "Quantidade"}</span>
               <input class="num" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${s.qtd}"></label>
             <label><span>Valor unitário (R$)</span>
               <input class="moeda" type="text" inputmode="decimal" data-campo="valor" data-id="${sv.id}" value="${s.valor>0?moedaInput(s.valor):""}" placeholder="${sv.aDefinir?"a definir":"0,00"}"></label>
@@ -937,7 +946,7 @@ function aplicarRegrasEStatus(){
     if(!s.on) return;
     // Regra 3: valor a definir bloqueia o PDF
     if(sv.aDefinir && !(s.valor > 0)){ pendentes.push(sv.nome); return; }
-    const total = (Number(s.qtd)||0) * (Number(s.valor)||0);
+    const total = totalServico(sv, s);
     if(s.pagamento === "Pagamento único") unico += total; else mensal += total;
   });
 
@@ -1187,7 +1196,7 @@ function renderPreview(){
 
   // 4. Um slide por serviço selecionado
   itens.forEach(({sv, cat, s}) => {
-    const totServ = (Number(s.qtd)||0) * (Number(s.valor)||0);
+    const totServ = totalServico(sv, s);
     const mosaico = sv.fotosEstudio
       ? `<div class="mosaico">
           <img src="${FOTOS_ESTUDIO.f1}" alt="">
@@ -1205,7 +1214,14 @@ function renderPreview(){
             <div class="descricao">${esc(s.descricao)}</div>
             ${sv.horasIncluidas && s.horas > 0 ? `<div class="horas-inc">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação</div>` : ""}
             <div class="inclusos">
-              ${sv.inclusos.map(it => `<span class="chip">${esc(it)}</span>`).join("")}
+              ${(sv.meses
+                  ? [`${sv.meses} ${sv.meses===1?"mês":"meses"} de plano`,
+                     `${s.qtd} ${Number(s.qtd)===1?"episódio":"episódios"} por mês`,
+                     `${unidadesServico(sv, s)} episódios no total`,
+                     "Gravação de 1h00 por episódio",
+                     `${money(s.valor)} por episódio`]
+                  : sv.inclusos
+                ).map(it => `<span class="chip">${esc(it)}</span>`).join("")}
             </div>
           </div>
           ${mosaico}
@@ -1220,13 +1236,13 @@ function renderPreview(){
   // 5. Investimento
   let mensal = 0, unico = 0;
   const linhas = itens.map(({sv, cat, s}) => {
-    const tot = (Number(s.qtd)||0) * (Number(s.valor)||0);
+    const tot = totalServico(sv, s);
     const unico1 = s.pagamento === "Pagamento único";
     if(unico1) unico += tot; else mensal += tot;
     return `<tr>
       <td><span class="pt" style="--rc:${cat.cor}"></span><span class="sv">${esc(sv.nome)}</span>
         <div class="tp">${esc(s.pagamento)}</div></td>
-      <td class="n">${s.qtd}</td>
+      <td class="n">${unidadesServico(sv, s)}</td>
       <td class="n">${money(s.valor)}</td>
       <td class="n">${money(tot)} ${esc(SUFIXO_REGIME[s.pagamento] || "")}</td>
     </tr>`;
