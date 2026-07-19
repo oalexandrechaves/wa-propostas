@@ -200,6 +200,12 @@ textarea{resize:vertical;min-height:86px;line-height:1.5}
 .editaveis label > span{font-size:11px;color:var(--texto-fraco);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
 .editaveis textarea{min-height:60px;font-size:13px}
 input.num,input.moeda{padding:8px 10px;font-size:13px}
+.editaveis select.forma{
+  width:100%;background:var(--bg-escuro);border:1px solid var(--linha);
+  border-radius:10px;color:var(--texto-claro);padding:8px 10px;font-size:13px;
+  transition:border-color .15s;
+}
+.editaveis select.forma:focus{outline:none;border-color:var(--cor-identidade)}
 
 /* Avisos */
 #avisos{margin-top:16px;display:flex;flex-direction:column;gap:8px}
@@ -619,7 +625,7 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 
     <!-- Totais -->
     <div id="totais">
-      <div class="t-linha mensal"><span class="rot">Total mensal recorrente</span><span class="val" id="t-mensal">R$ 0,00</span></div>
+      <div class="t-linha mensal"><span class="rot">Total recorrente</span><span class="val" id="t-mensal">R$ 0,00</span></div>
       <div class="t-linha unico"><span class="rot">Total pagamento único</span><span class="val" id="t-unico">R$ 0,00</span></div>
     </div>
 
@@ -787,6 +793,17 @@ const CATALOGO = [
 const INDICE = {};
 CATALOGO.forEach(cat => cat.servicos.forEach(sv => INDICE[sv.id] = {sv, cat}));
 
+// Formas de pagamento escolhidas por serviço. "Pagamento único" entra no total
+// de pagamento único; todos os outros regimes entram no total recorrente.
+const FORMAS_PAGAMENTO = ["Mensal","Bimestral","Trimestral","Semestral","Anual","Pagamento único"];
+// Sufixo do total por regime, exibido na tabela de investimento
+const SUFIXO_REGIME = {
+  "Mensal":"/mês","Bimestral":"/bimestre","Trimestral":"/trimestre",
+  "Semestral":"/semestre","Anual":"/ano","Pagamento único":""
+};
+// Forma padrão de um serviço a partir do catálogo
+const formaPadrao = (sv) => sv.recorrente ? "Mensal" : "Pagamento único";
+
 /* ==========================================================================
    Estado em memória
    ========================================================================== */
@@ -796,7 +813,7 @@ const estado = {
 };
 // Inicializa a seleção com os padrões do catálogo
 Object.values(INDICE).forEach(({sv}) => {
-  estado.sel[sv.id] = { on:false, qtd:1, valor:sv.valor, descricao:sv.descricao, horas:sv.horasPadrao || 0 };
+  estado.sel[sv.id] = { on:false, qtd:1, valor:sv.valor, descricao:sv.descricao, horas:sv.horasPadrao || 0, pagamento:formaPadrao(sv) };
 });
 
 // Data padrão: hoje
@@ -869,6 +886,10 @@ function renderCatalogo(){
             <label><span>Valor unitário (R$)</span>
               <input class="moeda" type="number" min="0" step="0.01" data-campo="valor" data-id="${sv.id}" value="${s.valor}" placeholder="${sv.aDefinir?"a definir":""}"></label>
           </div>
+          <label><span>Forma de pagamento</span>
+            <select class="forma" data-campo="pagamento" data-id="${sv.id}">
+              ${FORMAS_PAGAMENTO.map(f => `<option value="${esc(f)}" ${s.pagamento===f?"selected":""}>${esc(f)}</option>`).join("")}
+            </select></label>
           ${sv.horasIncluidas ? `<label><span>Horas incluídas de gravação</span>
             <input class="num" type="number" min="0" step="1" data-campo="horas" data-id="${sv.id}" value="${s.horas}"></label>` : ""}
           <label><span>Descrição</span>
@@ -901,7 +922,7 @@ function aplicarRegrasEStatus(){
     // Regra 3: valor a definir bloqueia o PDF
     if(sv.aDefinir && !(s.valor > 0)){ pendentes.push(sv.nome); return; }
     const total = (Number(s.qtd)||0) * (Number(s.valor)||0);
-    if(sv.recorrente) mensal += total; else unico += total;
+    if(s.pagamento === "Pagamento único") unico += total; else mensal += total;
   });
 
   document.getElementById("t-mensal").textContent = money(mensal);
@@ -979,6 +1000,7 @@ elCatalogo.addEventListener("input", (e) => {
   if(campo === "qtd") s.qtd = Math.max(1, Number(alvo.value)||1);
   else if(campo === "valor") s.valor = Math.max(0, Number(alvo.value)||0);
   else if(campo === "horas") s.horas = Math.max(0, Number(alvo.value)||0);
+  else if(campo === "pagamento") s.pagamento = alvo.value;
   else if(campo === "descricao") s.descricao = alvo.value;
   aplicarRegrasEStatus();
   renderPreview();
@@ -1162,7 +1184,7 @@ function renderPreview(){
         </div>
         <div class="preco-serv">
           <div class="v">${sv.aDefinir && !(s.valor>0) ? "a definir" : money(totServ)}</div>
-          ${sv.aDefinir ? "" : `<div class="u">${esc(sv.unidade)}</div>`}
+          ${sv.aDefinir && !(s.valor>0) ? "" : `<div class="u">${esc(s.pagamento)}</div>`}
         </div>
       </section>`;
   });
@@ -1171,13 +1193,14 @@ function renderPreview(){
   let mensal = 0, unico = 0;
   const linhas = itens.map(({sv, cat, s}) => {
     const tot = (Number(s.qtd)||0) * (Number(s.valor)||0);
-    if(sv.recorrente) mensal += tot; else unico += tot;
+    const unico1 = s.pagamento === "Pagamento único";
+    if(unico1) unico += tot; else mensal += tot;
     return `<tr>
       <td><span class="pt" style="--rc:${cat.cor}"></span><span class="sv">${esc(sv.nome)}</span>
-        <div class="tp">${sv.recorrente ? "Mensal recorrente" : "Pagamento único"}</div></td>
+        <div class="tp">${esc(s.pagamento)}</div></td>
       <td class="n">${s.qtd}</td>
       <td class="n">${money(s.valor)}</td>
-      <td class="n">${money(tot)} ${sv.recorrente ? "/mês" : ""}</td>
+      <td class="n">${money(tot)} ${esc(SUFIXO_REGIME[s.pagamento] || "")}</td>
     </tr>`;
   }).join("");
 
@@ -1190,7 +1213,7 @@ function renderPreview(){
         <tbody>${linhas}</tbody>
       </table>
       <div class="inv-totais">
-        <div class="bloco mensal"><div class="r">Total mensal recorrente</div><div class="v">${money(mensal)}</div></div>
+        <div class="bloco mensal"><div class="r">Total recorrente</div><div class="v">${money(mensal)}</div></div>
         <div class="bloco unico"><div class="r">Total pagamento único</div><div class="v">${money(unico)}</div></div>
       </div>
       <div class="rodape-inv">Valores acrescidos dos impostos na emissão da nota fiscal. Prazo de vigência e condições comerciais detalhados no contrato de prestação de serviços.</div>
