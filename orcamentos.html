@@ -30,6 +30,10 @@
   --texto-fraco:#9C93AC;
   --linha:#2C2740;
 
+  /* Cor base de identidade da ferramenta, em vermelho */
+  --cor-marca:#E63329;     /* vermelho base */
+  --cor-marca-2:#B0120C;   /* vermelho profundo para gradiente */
+
   /* Cores neon por categoria */
   --cor-estudio:#FF2E88;   /* magenta */
   --cor-externa:#FF7A18;   /* laranja */
@@ -104,7 +108,7 @@ input,textarea,select{font-family:inherit}
   display:flex;align-items:center;gap:10px;
 }
 .secao > h2::before{
-  content:"";width:22px;height:2px;background:var(--cor-estudio);border-radius:2px;
+  content:"";width:22px;height:2px;background:var(--cor-marca);border-radius:2px;
 }
 
 label.campo{display:block;margin-bottom:12px}
@@ -121,7 +125,7 @@ input[type=text],input[type=date],textarea,input.num,input.moeda{
   font-size:14px;
   transition:border-color .15s;
 }
-input:focus,textarea:focus{outline:none;border-color:var(--cor-identidade)}
+input:focus,textarea:focus{outline:none;border-color:var(--cor-marca)}
 textarea{resize:vertical;min-height:86px;line-height:1.5}
 
 /* Seletor de orientação */
@@ -143,7 +147,7 @@ textarea{resize:vertical;min-height:86px;line-height:1.5}
 .orient button[data-o=paisagem] .icone{width:34px;height:20px}
 .orient button[data-o=retrato] .icone{width:20px;height:28px}
 .orient button.ativo{
-  border-color:var(--cor-identidade);
+  border-color:var(--cor-marca);
   color:var(--branco);
   background:var(--bg-escuro-3);
 }
@@ -205,7 +209,7 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
   border-radius:10px;color:var(--texto-claro);padding:8px 10px;font-size:13px;
   transition:border-color .15s;
 }
-.editaveis select.forma:focus{outline:none;border-color:var(--cor-identidade)}
+.editaveis select.forma:focus{outline:none;border-color:var(--cor-marca)}
 
 /* Avisos */
 #avisos{margin-top:16px;display:flex;flex-direction:column;gap:8px}
@@ -215,7 +219,7 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
   border:1px solid;
   display:flex;gap:8px;align-items:flex-start;
 }
-.aviso.info{border-color:var(--cor-identidade);background:rgba(139,92,246,.1);color:#CDBBFF}
+.aviso.info{border-color:var(--cor-marca);background:rgba(230,51,41,.1);color:#F6B4AF}
 .aviso.alerta{border-color:var(--alerta);background:rgba(255,176,32,.1);color:#FFD98A}
 .aviso .marcador{font-weight:800}
 
@@ -237,7 +241,7 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 /* Botão gerar */
 #gerar{
   margin-top:20px;width:100%;
-  background:linear-gradient(90deg,var(--cor-estudio),var(--cor-identidade));
+  background:linear-gradient(90deg,var(--cor-marca),var(--cor-marca-2));
   color:#fff;font-family:var(--fonte-display);font-weight:700;font-size:16px;
   padding:15px;border-radius:12px;letter-spacing:.02em;
   transition:filter .15s,opacity .15s;
@@ -320,9 +324,10 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .s-capa h1{
   font-family:var(--fonte-display);font-weight:800;
   font-size:104px;line-height:.98;margin-top:26px;letter-spacing:-.02em;
+  color:var(--c);
 }
 .s-capa .cliente{margin-top:40px}
-.s-capa .cliente .nome{font-family:var(--fonte-display);font-weight:700;font-size:38px}
+.s-capa .cliente .nome{font-family:var(--fonte-display);font-weight:700;font-size:38px;color:var(--c)}
 .s-capa .cliente .empresa{font-size:22px;color:var(--texto-fraco);margin-top:4px}
 .s-capa .data{position:absolute;right:84px;bottom:64px;font-size:18px;color:var(--texto-fraco)}
 .s-capa .barra{width:120px;height:8px;border-radius:8px;background:var(--c);margin-top:30px}
@@ -1078,7 +1083,7 @@ function renderPreview(){
 
   // 1. Capa
   html += `
-    <section class="slide escuro s-capa" style="--c:${INDICE[itens[0].sv.id].cat.cor}">
+    <section class="slide escuro s-capa" style="--c:var(--cor-marca)">
       <div class="rotulo-util selo">Proposta comercial</div>
       <h1>Proposta<br>comercial</h1>
       <div class="barra"></div>
@@ -1093,7 +1098,7 @@ function renderPreview(){
   // 2. Apresentação, só se houver texto
   if(apre){
     html += `
-      <section class="slide escuro s-apre" style="--c:var(--cor-identidade)">
+      <section class="slide escuro s-apre" style="--c:var(--cor-marca)">
         <div class="rotulo-util selo">Diagnóstico</div>
         <p>${esc(apre)}</p>
         <div class="assinatura-rodape"><b>BINAH DIGITAL</b><span class="traco"></span>Estúdio WA</div>
@@ -1231,7 +1236,7 @@ function renderPreview(){
 
   // 6. Próximos passos
   html += `
-    <section class="slide escuro s-passos" style="--c:var(--cor-estudio)">
+    <section class="slide escuro s-passos" style="--c:var(--cor-marca)">
       <div class="rotulo-util selo">Vamos começar</div>
       <h2>Próximos passos</h2>
       <div class="passos">
