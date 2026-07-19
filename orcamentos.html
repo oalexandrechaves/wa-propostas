@@ -765,8 +765,8 @@ const CATALOGO = [
       { id:"vinhetas", nome:"Vinhetas e identidade para podcast", valor:380, recorrente:false, unidade:"pagamento único",
         descricao:"Pacote de vinhetas e identidade visual para o podcast, com inserções gráficas na edição.",
         inclusos:["Vinheta de abertura","Vinheta de encerramento","GCs","QR Codes","Inserção de informações gráficas na edição"] },
-      { id:"cortes", nome:"Cortes para redes sociais", valor:140, recorrente:true, unidade:"por episódio", desabilitaSe:"pacote-intensivo",
-        descricao:"Cortes verticais para redes sociais a partir de cada episódio, prontos para distribuição.",
+      { id:"cortes", nome:"Cortes para redes sociais", valor:140, recorrente:true, unidade:"por episódio", desabilitaSe:"pacote-intensivo", porEpisodiosDoPlano:true,
+        descricao:"Cortes verticais para redes sociais a partir de cada episódio do plano de podcast, prontos para distribuição.",
         inclusos:["8 cortes por episódio"] }
     ]
   },
@@ -841,10 +841,20 @@ const brl = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
 const money = (n) => brl.format(n || 0);
 // Unidades faturáveis de um serviço. Nos planos de podcast, o campo qtd é o
 // número de episódios por mês e as unidades totais são meses x episódios por
-// mês (o total de episódios do plano). Nos demais serviços, é a quantidade.
-const unidadesServico = (sv, s) => (sv.meses || 1) * (Number(s.qtd)||0);
+// mês (o total de episódios do plano). Os cortes puxam o total de episódios do
+// plano de podcast ativo. Nos demais serviços, é a quantidade.
+const unidadesServico = (sv, s) => sv.porEpisodiosDoPlano ? episodiosDoPlano() : (sv.meses || 1) * (Number(s.qtd)||0);
 // Total do serviço: unidades faturáveis x valor unitário (por episódio nos planos).
 const totalServico = (sv, s) => unidadesServico(sv, s) * (Number(s.valor)||0);
+// Total de episódios do plano de podcast ativo (meses x episódios por mês), ou
+// 0 quando nenhum plano de podcast está selecionado.
+function episodiosDoPlano(){
+  for(const {sv} of Object.values(INDICE)){
+    const s = estado.sel[sv.id];
+    if(sv.meses && s && s.on) return unidadesServico(sv, s);
+  }
+  return 0;
+}
 // Formata um número como moeda para o campo de entrada (sem o símbolo R$),
 // milhar com ponto e duas casas com vírgula. Ex.: 1588 -> "1.588,00".
 const moedaInput = (n) => (Number(n)||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -883,7 +893,9 @@ function renderCatalogo(){
 
     cat.servicos.forEach(sv => {
       const s = estado.sel[sv.id];
-      const desab = sv.desabilitaSe && estado.sel[sv.desabilitaSe] && estado.sel[sv.desabilitaSe].on;
+      const desabIntensivo = sv.desabilitaSe && estado.sel[sv.desabilitaSe] && estado.sel[sv.desabilitaSe].on;
+      const desabSemPlano = sv.porEpisodiosDoPlano && episodiosDoPlano() === 0;
+      const desab = desabIntensivo || desabSemPlano;
       const wrap = document.createElement("div");
       wrap.className = "servico" + (s.on ? " aberto" : "") + (desab ? " desabilitado" : "");
       wrap.style.setProperty("--c", cat.cor);
@@ -902,12 +914,16 @@ function renderCatalogo(){
             ${precoTxt}
           </span>
         </label>
-        ${desab ? `<div class="nota-mini">Já incluso no pacote intensivo, não é necessário contratar à parte.</div>` : ""}
+        ${desabIntensivo ? `<div class="nota-mini">Já incluso no pacote intensivo, não é necessário contratar à parte.</div>` : ""}
+        ${desabSemPlano ? `<div class="nota-mini">Selecione um plano de podcast primeiro para calcular os cortes pelo total de episódios.</div>` : ""}
         ${sv.horasIncluidas && s.horas > 0 ? `<div class="nota-inclui">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação. Valor fechado por projeto.</div>` : ""}
         <div class="editaveis">
           <div class="linha-nums">
-            <label><span>${sv.meses ? "Episódios por mês" : "Quantidade"}</span>
-              <input class="num" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${s.qtd}"></label>
+            ${sv.porEpisodiosDoPlano
+              ? `<label><span>Episódios do plano</span>
+                  <input class="num" id="campo-episodios-${sv.id}" type="text" value="${episodiosDoPlano()}" disabled></label>`
+              : `<label><span>${sv.meses ? "Episódios por mês" : "Quantidade"}</span>
+                  <input class="num" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${s.qtd}"></label>`}
             <label><span>Valor unitário (R$)</span>
               <input class="moeda" type="text" inputmode="decimal" data-campo="valor" data-id="${sv.id}" value="${s.valor>0?moedaInput(s.valor):""}" placeholder="${sv.aDefinir?"a definir":"0,00"}"></label>
           </div>
@@ -935,6 +951,10 @@ let avisosExcl = []; // avisos temporários de exclusividade
 function aplicarRegrasEStatus(){
   // Regra 2: cortes desabilitado quando o pacote intensivo está marcado
   if(estado.sel["pacote-intensivo"].on && estado.sel["cortes"].on){
+    estado.sel["cortes"].on = false;
+  }
+  // Regra 2b: cortes precisam de um plano de podcast para puxar o total de episódios
+  if(estado.sel["cortes"].on && episodiosDoPlano() === 0){
     estado.sel["cortes"].on = false;
   }
 
@@ -1022,7 +1042,12 @@ elCatalogo.addEventListener("input", (e) => {
   if(!campo) return;
   const id = alvo.dataset.id;
   const s = estado.sel[id];
-  if(campo === "qtd") s.qtd = Math.max(1, Number(alvo.value)||1);
+  if(campo === "qtd"){
+    s.qtd = Math.max(1, Number(alvo.value)||1);
+    // Mantém o campo somente leitura dos cortes em dia sem re-renderizar o painel
+    const campoCortes = document.getElementById("campo-episodios-cortes");
+    if(campoCortes) campoCortes.value = episodiosDoPlano();
+  }
   else if(campo === "valor"){
     const n = centavosParaNumero(alvo.value);
     s.valor = n;
@@ -1219,6 +1244,11 @@ function renderPreview(){
                      `${s.qtd} ${Number(s.qtd)===1?"episódio":"episódios"} por mês`,
                      `${unidadesServico(sv, s)} episódios no total`,
                      "Gravação de 1h00 por episódio",
+                     `${money(s.valor)} por episódio`]
+                  : sv.porEpisodiosDoPlano
+                  ? [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} do plano`,
+                     `${unidadesServico(sv, s) * 8} cortes no total`,
+                     "8 cortes por episódio",
                      `${money(s.valor)} por episódio`]
                   : sv.inclusos
                 ).map(it => `<span class="chip">${esc(it)}</span>`).join("")}
