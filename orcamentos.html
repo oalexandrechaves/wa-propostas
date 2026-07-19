@@ -826,6 +826,12 @@ document.getElementById("c-data").value = iso;
    ========================================================================== */
 const brl = new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"});
 const money = (n) => brl.format(n || 0);
+// Formata um número como moeda para o campo de entrada (sem o símbolo R$),
+// milhar com ponto e duas casas com vírgula. Ex.: 1588 -> "1.588,00".
+const moedaInput = (n) => (Number(n)||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+// Converte o texto digitado no campo em número, tratando os dígitos como
+// centavos (estilo caixa). Ex.: "42750" -> 427.5, "158800" -> 1588.
+const centavosParaNumero = (txt) => { const d = String(txt).replace(/\D/g,""); return d ? parseInt(d,10)/100 : 0; };
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
 const kebab = (s) => (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "cliente";
@@ -884,7 +890,7 @@ function renderCatalogo(){
             <label><span>Quantidade</span>
               <input class="num" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${s.qtd}"></label>
             <label><span>Valor unitário (R$)</span>
-              <input class="moeda" type="number" min="0" step="0.01" data-campo="valor" data-id="${sv.id}" value="${s.valor}" placeholder="${sv.aDefinir?"a definir":""}"></label>
+              <input class="moeda" type="text" inputmode="decimal" data-campo="valor" data-id="${sv.id}" value="${s.valor>0?moedaInput(s.valor):""}" placeholder="${sv.aDefinir?"a definir":"0,00"}"></label>
           </div>
           <label><span>Forma de pagamento</span>
             <select class="forma" data-campo="pagamento" data-id="${sv.id}">
@@ -998,7 +1004,11 @@ elCatalogo.addEventListener("input", (e) => {
   const id = alvo.dataset.id;
   const s = estado.sel[id];
   if(campo === "qtd") s.qtd = Math.max(1, Number(alvo.value)||1);
-  else if(campo === "valor") s.valor = Math.max(0, Number(alvo.value)||0);
+  else if(campo === "valor"){
+    const n = centavosParaNumero(alvo.value);
+    s.valor = n;
+    alvo.value = n > 0 ? moedaInput(n) : "";
+  }
   else if(campo === "horas") s.horas = Math.max(0, Number(alvo.value)||0);
   else if(campo === "pagamento") s.pagamento = alvo.value;
   else if(campo === "descricao") s.descricao = alvo.value;
