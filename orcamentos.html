@@ -435,23 +435,27 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .s-estudio .est-painel-cab{display:flex;align-items:center;gap:12px}
 .s-estudio .est-painel h3{font-family:var(--fonte-display);font-weight:600;font-size:26px;color:var(--tinta);margin:0}
 .s-estudio .est-barra2{width:40px;height:7px;border-radius:99px;background:var(--acc-grad)}
-/* Lista em duas colunas equilibradas (multicol): itens longos quebram a linha
-   e ficam inteiros na coluna, sem estourar a borda do painel. */
-.s-estudio .est-lista{margin-top:14px;flex:1;column-count:2;column-gap:24px}
-.s-estudio .est-lista .it{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--acc-line);break-inside:avoid}
-.s-estudio .est-lista .it .mk{width:9px;height:9px;flex:none;margin-top:5px;border-radius:3px;background:var(--acc-grad)}
-.s-estudio .est-lista .it span{min-width:0;font-size:14px;line-height:1.3;color:#2A1F26;overflow-wrap:break-word}
-/* Lista de conforto: poucos itens, distribuídos para não deixar vazio no rodapé */
-.s-estudio .est-lista.conforto{column-count:auto;display:flex;flex-direction:column;justify-content:space-around}
-.s-estudio .est-lista.conforto .it span{font-size:15px}
+/* Balões (pílulas) no estilo dos chips dos slides de serviço, um por item. */
+.s-estudio .est-lista{margin-top:14px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.s-estudio .est-lista .it{
+  display:flex;gap:10px;align-items:flex-start;break-inside:avoid;
+  border:1px solid var(--acc);border-radius:18px;padding:10px 16px;
+  background:color-mix(in srgb, var(--acc) 12%, transparent);
+}
+.s-estudio .est-lista .it .mk{width:8px;height:8px;flex:none;margin-top:5px;border-radius:50%;background:var(--acc)}
+.s-estudio .est-lista .it span{min-width:0;font-size:13.5px;line-height:1.3;color:#2A1F26;overflow-wrap:break-word}
+/* Lista de conforto: poucos itens, balões distribuídos na altura do painel */
+.s-estudio .est-lista.conforto{justify-content:space-between}
+.s-estudio .est-lista.conforto .it span{font-size:14.5px}
 /* A4 retrato: mosaico em cima, equipamentos embaixo em duas colunas */
 #deck[data-orient=retrato] .s-estudio{flex-direction:column;gap:0;padding:52px 50px}
 #deck[data-orient=retrato] .s-estudio .est-main{flex:none}
 #deck[data-orient=retrato] .s-estudio h2{font-size:46px}
 #deck[data-orient=retrato] .s-estudio .est-mosaico{flex:none;height:560px;margin-top:26px}
 #deck[data-orient=retrato] .s-estudio .est-painel{width:auto;flex:1;margin-top:26px;border-radius:22px;padding:28px 32px}
-#deck[data-orient=retrato] .s-estudio .est-lista{margin-top:14px;column-gap:40px}
-#deck[data-orient=retrato] .s-estudio .est-lista .it{padding:6px 0}
+#deck[data-orient=retrato] .s-estudio .est-lista{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:center}
+#deck[data-orient=retrato] .s-estudio .est-lista.conforto{grid-template-columns:1fr 1fr}
+#deck[data-orient=retrato] .s-estudio .est-lista .it{padding:11px 18px}
 #deck[data-orient=retrato] .s-estudio .est-lista .it span{font-size:14.5px}
 
 /* ---- Investimento ---- */
