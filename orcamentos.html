@@ -584,6 +584,12 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
   }
   .slide:last-child{break-after:auto;page-break-after:avoid}
   .card-cat,.inv-totais .bloco,.slide *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Na impressão, o desfoque das sombras dos cards da visão geral e dos balões
+     do estúdio vazava para os vãos e se sobrepunha entre os elementos, criando
+     faixas retangulares translúcidas ("fumaça quadriculada") sobre o creme.
+     Zeramos as sombras só no PDF, deixando o fundo creme liso e uniforme. Na
+     tela as sombras suaves dos cards e balões seguem intactas. */
+  .card-cat,.s-estudio .est-lista .it{box-shadow:none}
 }
 </style>
 </head>
