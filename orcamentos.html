@@ -421,13 +421,11 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .s-estudio .est-barra{width:30px;height:8px;border-radius:99px;background:var(--acc-grad)}
 .s-estudio .est-selo{font-family:var(--fonte-display);font-weight:700;font-size:13px;letter-spacing:.24em;color:var(--acc)}
 .s-estudio h2{font-family:var(--fonte-display);font-weight:600;font-size:50px;line-height:1;letter-spacing:-.01em;color:var(--tinta);margin:2px 0 0}
-/* Mosaico em grade com molduras próximas do quadrado, para cortar as fotos o
-   mínimo possível (elas são mais quadradas do que retangulares). */
-.s-estudio .est-mosaico{flex:1;margin-top:24px;display:grid;gap:14px;min-height:0}
-.s-estudio .est-mosaico.quatro{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-.s-estudio .est-mosaico.tres{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
-.s-estudio .est-mosaico.tres img:first-child{grid-row:1 / span 2}
-.s-estudio .est-mosaico img{width:100%;height:100%;min-height:0;object-fit:cover;border-radius:14px;display:block}
+/* Mosaico: fotos retrato lado a lado, molduras na mesma proporção das fotos,
+   para cortar só as pontinhas laterais no arredondamento e deixar as fotos
+   praticamente inteiras. */
+.s-estudio .est-mosaico{flex:1;margin-top:24px;display:flex;gap:14px;min-height:0}
+.s-estudio .est-mosaico img{flex:1;min-width:0;height:100%;object-fit:cover;border-radius:14px;display:block}
 .s-estudio .est-painel{
   width:372px;flex:none;background:var(--acc-soft);border-radius:26px;
   padding:34px 30px;box-sizing:border-box;display:flex;flex-direction:column;
