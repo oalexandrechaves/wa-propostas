@@ -413,48 +413,40 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
   --acc-grad:linear-gradient(135deg,#FF5A3C,#C1160F);
   --acc-soft:linear-gradient(160deg,#FDF0ED,#F6DBD4);
   --acc-line:#EFCEC7;
-  padding:46px 54px;display:flex;gap:40px;align-items:stretch;
+  padding:40px 52px;display:flex;flex-direction:column;gap:18px;
 }
-.s-estudio .est-main{flex:1;min-width:0;display:flex;flex-direction:column}
-.s-estudio .est-cab{display:flex;flex-direction:column;gap:10px}
+.s-estudio .est-cab{flex:none;display:flex;flex-direction:column;gap:8px}
 .s-estudio .est-selo-wrap{display:flex;align-items:center;gap:12px}
 .s-estudio .est-barra{width:30px;height:8px;border-radius:99px;background:var(--acc-grad)}
 .s-estudio .est-selo{font-family:var(--fonte-display);font-weight:700;font-size:13px;letter-spacing:.24em;color:var(--acc)}
-.s-estudio h2{font-family:var(--fonte-display);font-weight:600;font-size:50px;line-height:1;letter-spacing:-.01em;color:var(--tinta);margin:2px 0 0}
-/* Mosaico: fotos retrato lado a lado, molduras na mesma proporção das fotos,
-   para cortar só as pontinhas laterais no arredondamento e deixar as fotos
-   praticamente inteiras. */
-.s-estudio .est-mosaico{flex:1;margin-top:24px;display:flex;gap:14px;min-height:0}
-.s-estudio .est-mosaico img{flex:1;min-width:0;height:100%;object-fit:cover;border-radius:14px;display:block}
-.s-estudio .est-painel{
-  width:372px;flex:none;background:var(--acc-soft);border-radius:26px;
-  padding:34px 30px;box-sizing:border-box;display:flex;flex-direction:column;
-}
+.s-estudio h2{font-family:var(--fonte-display);font-weight:600;font-size:46px;line-height:1;letter-spacing:-.01em;color:var(--tinta);margin:0}
+/* Fotos numa faixa horizontal na largura toda. As fotos são retrato, então o
+   cover recorta o mínimo para molduras próximas do quadrado, sem esticar. */
+.s-estudio .est-mosaico{flex:1;display:flex;gap:16px;min-height:0}
+.s-estudio .est-mosaico img{flex:1;min-width:0;height:100%;object-fit:cover;border-radius:16px;display:block}
+/* Rodapé com os balões (equipamentos ou conforto) na largura toda. */
+.s-estudio .est-rodape{flex:none;display:flex;flex-direction:column;gap:10px}
 .s-estudio .est-painel-cab{display:flex;align-items:center;gap:12px}
-.s-estudio .est-painel h3{font-family:var(--fonte-display);font-weight:600;font-size:26px;color:var(--tinta);margin:0}
+.s-estudio .est-painel-cab h3{font-family:var(--fonte-display);font-weight:600;font-size:22px;color:var(--tinta);margin:0}
 .s-estudio .est-barra2{width:40px;height:7px;border-radius:99px;background:var(--acc-grad)}
-/* Balões (pílulas) no estilo dos chips dos slides de serviço, um por item. */
-.s-estudio .est-lista{margin-top:14px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px}
+/* Grade de balões uniformes: mesmas colunas e mesma altura (o min-height cobre o
+   maior e os menores centralizam o texto), no estilo dos chips de serviço. */
+.s-estudio .est-lista{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .s-estudio .est-lista .it{
-  display:flex;gap:10px;align-items:flex-start;break-inside:avoid;
-  border:1px solid var(--acc);border-radius:18px;padding:10px 16px;
+  display:flex;gap:9px;align-items:center;min-height:64px;box-sizing:border-box;
+  border:1px solid var(--acc);border-radius:14px;padding:8px 14px;
   background:color-mix(in srgb, var(--acc) 12%, transparent);
 }
-.s-estudio .est-lista .it .mk{width:8px;height:8px;flex:none;margin-top:5px;border-radius:50%;background:var(--acc)}
-.s-estudio .est-lista .it span{min-width:0;font-size:13.5px;line-height:1.3;color:#2A1F26;overflow-wrap:break-word}
-/* Lista de conforto: poucos itens, balões distribuídos na altura do painel */
-.s-estudio .est-lista.conforto{justify-content:space-between}
-.s-estudio .est-lista.conforto .it span{font-size:14.5px}
-/* A4 retrato: mosaico em cima, equipamentos embaixo em duas colunas */
-#deck[data-orient=retrato] .s-estudio{flex-direction:column;gap:0;padding:52px 50px}
-#deck[data-orient=retrato] .s-estudio .est-main{flex:none}
+.s-estudio .est-lista .it .mk{width:8px;height:8px;flex:none;border-radius:50%;background:var(--acc)}
+.s-estudio .est-lista .it span{min-width:0;font-size:12px;line-height:1.25;color:#2A1F26;overflow-wrap:break-word}
+/* A4 retrato: mesma pilha, com balões em duas colunas por serem mais estreitas.
+   Os blocos se distribuem na altura para não deixar vazio grande no rodapé. */
+#deck[data-orient=retrato] .s-estudio{padding:56px 50px;gap:0;justify-content:space-between}
 #deck[data-orient=retrato] .s-estudio h2{font-size:46px}
-#deck[data-orient=retrato] .s-estudio .est-mosaico{flex:none;height:560px;margin-top:26px}
-#deck[data-orient=retrato] .s-estudio .est-painel{width:auto;flex:1;margin-top:26px;border-radius:22px;padding:28px 32px}
-#deck[data-orient=retrato] .s-estudio .est-lista{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:center}
-#deck[data-orient=retrato] .s-estudio .est-lista.conforto{grid-template-columns:1fr 1fr}
-#deck[data-orient=retrato] .s-estudio .est-lista .it{padding:11px 18px}
-#deck[data-orient=retrato] .s-estudio .est-lista .it span{font-size:14.5px}
+#deck[data-orient=retrato] .s-estudio .est-mosaico{flex:none;height:440px}
+#deck[data-orient=retrato] .s-estudio .est-lista{grid-template-columns:repeat(2,1fr);gap:16px}
+#deck[data-orient=retrato] .s-estudio .est-lista .it{min-height:90px;padding:15px 20px}
+#deck[data-orient=retrato] .s-estudio .est-lista .it span{font-size:15px}
 
 /* ---- Investimento ---- */
 .s-inv{padding:60px 76px;display:flex;flex-direction:column;justify-content:safe center}
@@ -1215,21 +1207,19 @@ function renderPreview(){
     ];
     html += `
       <section class="slide claro s-estudio">
-        <div class="est-main">
-          <div class="est-cab">
-            <div class="est-selo-wrap">
-              <span class="est-barra"></span>
-              <span class="est-selo">WA ESTÚDIO</span>
-            </div>
-            <h2>Estrutura do Estúdio</h2>
+        <div class="est-cab">
+          <div class="est-selo-wrap">
+            <span class="est-barra"></span>
+            <span class="est-selo">WA ESTÚDIO</span>
           </div>
-          <div class="est-mosaico tres">
-            <img src="${FOTOS_ESTUDIO.f1}" alt="">
-            <img src="${FOTOS_ESTUDIO.f2}" alt="">
-            <img src="${FOTOS_ESTUDIO.f3}" alt="">
-          </div>
+          <h2>Estrutura do Estúdio</h2>
         </div>
-        <div class="est-painel">
+        <div class="est-mosaico">
+          <img src="${FOTOS_ESTUDIO.f1}" alt="">
+          <img src="${FOTOS_ESTUDIO.f2}" alt="">
+          <img src="${FOTOS_ESTUDIO.f3}" alt="">
+        </div>
+        <div class="est-rodape">
           <div class="est-painel-cab">
             <h3>Equipamentos</h3>
             <span class="est-barra2"></span>
@@ -1241,21 +1231,19 @@ function renderPreview(){
       </section>`;
     html += `
       <section class="slide claro s-estudio">
-        <div class="est-main">
-          <div class="est-cab">
-            <div class="est-selo-wrap">
-              <span class="est-barra"></span>
-              <span class="est-selo">WA ESTÚDIO</span>
-            </div>
-            <h2>Estrutura do Estúdio</h2>
+        <div class="est-cab">
+          <div class="est-selo-wrap">
+            <span class="est-barra"></span>
+            <span class="est-selo">WA ESTÚDIO</span>
           </div>
-          <div class="est-mosaico tres">
-            <img src="${FOTOS_ESTUDIO.f4}" alt="">
-            <img src="${FOTOS_ESTUDIO.f5}" alt="">
-            <img src="${FOTOS_ESTUDIO.f6}" alt="">
-          </div>
+          <h2>Estrutura do Estúdio</h2>
         </div>
-        <div class="est-painel">
+        <div class="est-mosaico">
+          <img src="${FOTOS_ESTUDIO.f4}" alt="">
+          <img src="${FOTOS_ESTUDIO.f5}" alt="">
+          <img src="${FOTOS_ESTUDIO.f6}" alt="">
+        </div>
+        <div class="est-rodape">
           <div class="est-painel-cab">
             <h3>Conforto e apoio</h3>
             <span class="est-barra2"></span>
