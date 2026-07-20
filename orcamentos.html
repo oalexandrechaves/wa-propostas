@@ -814,6 +814,15 @@ const SUFIXO_REGIME = {
 };
 // Forma padrão de um serviço a partir do catálogo
 const formaPadrao = (sv) => sv.recorrente ? "Mensal" : "Pagamento único";
+// Meses de episódios que entram em cada parcela conforme a forma de pagamento.
+const MESES_FORMA = { "Mensal":1, "Bimestral":2, "Trimestral":3, "Semestral":6, "Anual":12 };
+// Formas oferecidas por serviço. Nos planos de podcast, a forma é limitada aos
+// meses do plano: um plano trimestral (3 meses) não pode ser cobrado semestral
+// nem anual, então só oferece as parcelas que cabem no plano, além do pagamento
+// único, evitando contradição entre o valor e o rótulo.
+const formasDisponiveis = (sv) => sv.meses
+  ? FORMAS_PAGAMENTO.filter(f => f === "Pagamento único" || (MESES_FORMA[f] || 1) <= sv.meses)
+  : FORMAS_PAGAMENTO;
 
 /* ==========================================================================
    Estado em memória
@@ -851,9 +860,21 @@ function episodiosDoPlano(){
   const p = planoAtivo();
   return p ? p.sv.meses * (Number(p.s.qtd)||0) : 0;
 }
-// Unidades faturáveis de um serviço.
-// - Planos de podcast: o campo qtd é o número de episódios por mês e as unidades
-//   são meses x episódios por mês (o total de episódios do plano).
+// Total de episódios de um plano de podcast ao longo de todo o contrato:
+// meses do plano x episódios por mês. Não depende da forma de pagamento, é o
+// dado do plano exibido nos chips do slide.
+const episodiosTotais = (sv, s) => (sv.meses || 1) * (Number(s.qtd)||0);
+// Meses de episódios cobrados em cada parcela conforme a forma de pagamento,
+// limitados aos meses do plano. Pagamento único cobra o plano inteiro de uma vez.
+const mesesFaturados = (sv, s) => {
+  const teto = sv.meses || 1;
+  if(s.pagamento === "Pagamento único") return teto;
+  return Math.min(MESES_FORMA[s.pagamento] || 1, teto);
+};
+// Unidades faturáveis de um serviço em cada parcela cobrada.
+// - Planos de podcast: episódios da parcela = meses faturados x episódios por mês.
+//   Mensal cobra 1 mês, bimestral 2, e assim por diante, sem passar dos meses do
+//   plano; pagamento único cobra todos os episódios do plano de uma vez.
 // - Cortes: seguem a forma de pagamento, igual aos planos. Recorrente cobra por
 //   mês (episódios por mês); pagamento único cobra o total de episódios do plano.
 // - Demais serviços: a quantidade digitada.
@@ -864,7 +885,8 @@ const unidadesServico = (sv, s) => {
     const porMes = Number(p.s.qtd)||0;
     return s.pagamento === "Pagamento único" ? p.sv.meses * porMes : porMes;
   }
-  return (sv.meses || 1) * (Number(s.qtd)||0);
+  if(sv.meses) return mesesFaturados(sv, s) * (Number(s.qtd)||0);
+  return Number(s.qtd)||0;
 };
 // Total do serviço: unidades faturáveis x valor unitário (por episódio nos planos).
 const totalServico = (sv, s) => unidadesServico(sv, s) * (Number(s.valor)||0);
@@ -942,7 +964,7 @@ function renderCatalogo(){
           </div>
           <label><span>Forma de pagamento</span>
             <select class="forma" data-campo="pagamento" data-id="${sv.id}">
-              ${FORMAS_PAGAMENTO.map(f => `<option value="${esc(f)}" ${s.pagamento===f?"selected":""}>${esc(f)}</option>`).join("")}
+              ${formasDisponiveis(sv).map(f => `<option value="${esc(f)}" ${s.pagamento===f?"selected":""}>${esc(f)}</option>`).join("")}
             </select></label>
           ${sv.horasIncluidas ? `<label><span>Horas incluídas de gravação</span>
             <input class="num" type="number" min="0" step="1" data-campo="horas" data-id="${sv.id}" value="${s.horas}"></label>` : ""}
@@ -1278,7 +1300,7 @@ function renderPreview(){
               ${(sv.meses
                   ? [`${sv.meses} ${sv.meses===1?"mês":"meses"} de plano`,
                      `${s.qtd} ${Number(s.qtd)===1?"episódio":"episódios"} por mês`,
-                     `${unidadesServico(sv, s)} episódios no total`,
+                     `${episodiosTotais(sv, s)} episódios no total`,
                      "Gravação de 1h00 por episódio",
                      `${money(s.valor)} por episódio`]
                   : sv.porEpisodiosDoPlano
