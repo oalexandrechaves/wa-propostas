@@ -935,8 +935,7 @@ function renderCatalogo(){
     cat.servicos.forEach(sv => {
       const s = estado.sel[sv.id];
       const desabIntensivo = sv.desabilitaSe && estado.sel[sv.desabilitaSe] && estado.sel[sv.desabilitaSe].on;
-      const desabSemPlano = sv.porEpisodiosDoPlano && episodiosDoPlano() === 0;
-      const desab = desabIntensivo || desabSemPlano;
+      const desab = desabIntensivo;
       const wrap = document.createElement("div");
       wrap.className = "servico" + (s.on ? " aberto" : "") + (desab ? " desabilitado" : "");
       wrap.style.setProperty("--c", cat.cor);
@@ -956,7 +955,6 @@ function renderCatalogo(){
           </span>
         </label>
         ${desabIntensivo ? `<div class="nota-mini">Já incluso no pacote intensivo, não é necessário contratar à parte.</div>` : ""}
-        ${desabSemPlano ? `<div class="nota-mini">Selecione um plano de podcast primeiro para calcular os cortes pelo total de episódios.</div>` : ""}
         ${sv.horasIncluidas && s.horas > 0 ? `<div class="nota-inclui">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação. Valor fechado por projeto.</div>` : ""}
         <div class="editaveis">
           <div class="linha-nums">
@@ -992,10 +990,6 @@ let avisosExcl = []; // avisos temporários de exclusividade
 function aplicarRegrasEStatus(){
   // Regra 2: cortes desabilitado quando o pacote intensivo está marcado
   if(estado.sel["pacote-intensivo"].on && estado.sel["cortes"].on){
-    estado.sel["cortes"].on = false;
-  }
-  // Regra 2b: cortes precisam de um plano de podcast para puxar o total de episódios
-  if(estado.sel["cortes"].on && episodiosDoPlano() === 0){
     estado.sel["cortes"].on = false;
   }
 
