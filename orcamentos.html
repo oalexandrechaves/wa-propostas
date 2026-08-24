@@ -839,7 +839,7 @@ const estado = {
 };
 // Inicializa a seleção com os padrões do catálogo
 Object.values(INDICE).forEach(({sv}) => {
-  estado.sel[sv.id] = { on:false, qtd:sv.meses ? 4 : 1, valor:sv.valor, descricao:sv.descricao, horas:sv.horasPadrao || 0, pagamento:formaPadrao(sv) };
+  estado.sel[sv.id] = { on:false, qtd:sv.meses ? 4 : 1, qtdEditada:false, valor:sv.valor, descricao:sv.descricao, horas:sv.horasPadrao || 0, pagamento:formaPadrao(sv) };
 });
 
 // Data padrão: hoje
@@ -866,6 +866,10 @@ function episodiosDoPlano(){
   const p = planoAtivo();
   return p ? p.sv.meses * (Number(p.s.qtd)||0) : 0;
 }
+// Quantidade de episódios exibida no campo dos cortes: enquanto ninguém digitar
+// nada, um plano de podcast ativo pré-preenche com o total de episódios do plano;
+// a partir do momento em que o usuário digita, vale o número dele.
+const episodiosCortes = (s) => (planoAtivo() && !s.qtdEditada) ? episodiosDoPlano() : (Number(s.qtd)||1);
 // Total de episódios de um plano de podcast ao longo de todo o contrato:
 // meses do plano x episódios por mês. Não depende da forma de pagamento, é o
 // dado do plano exibido nos chips do slide.
@@ -883,11 +887,12 @@ const mesesFaturados = (sv, s) => {
 //   plano; pagamento único cobra todos os episódios do plano de uma vez.
 // - Cortes: seguem a forma de pagamento, igual aos planos. Recorrente cobra por
 //   mês (episódios por mês); pagamento único cobra o total de episódios do plano.
+//   Sem plano, ou com a quantidade sobrescrita à mão, valem os episódios digitados.
 // - Demais serviços: a quantidade digitada.
 const unidadesServico = (sv, s) => {
   if(sv.porEpisodiosDoPlano){
     const p = planoAtivo();
-    if(!p) return 0;
+    if(!p || s.qtdEditada) return Number(s.qtd)||0;
     const porMes = Number(p.s.qtd)||0;
     return s.pagamento === "Pagamento único" ? p.sv.meses * porMes : porMes;
   }
@@ -935,9 +940,8 @@ function renderCatalogo(){
     cat.servicos.forEach(sv => {
       const s = estado.sel[sv.id];
       const desabIntensivo = sv.desabilitaSe && estado.sel[sv.desabilitaSe] && estado.sel[sv.desabilitaSe].on;
-      const desab = desabIntensivo;
       const wrap = document.createElement("div");
-      wrap.className = "servico" + (s.on ? " aberto" : "") + (desab ? " desabilitado" : "");
+      wrap.className = "servico" + (s.on ? " aberto" : "") + (desabIntensivo ? " desabilitado" : "");
       wrap.style.setProperty("--c", cat.cor);
 
       const precoTxt = sv.aDefinir
@@ -948,7 +952,7 @@ function renderCatalogo(){
 
       wrap.innerHTML = `
         <label class="topo">
-          <input type="checkbox" data-id="${sv.id}" ${s.on?"checked":""} ${desab?"disabled":""}>
+          <input type="checkbox" data-id="${sv.id}" ${s.on?"checked":""} ${desabIntensivo?"disabled":""}>
           <span class="rotulo">
             <span class="nome">${esc(sv.nome)}</span>
             ${precoTxt}
@@ -959,8 +963,8 @@ function renderCatalogo(){
         <div class="editaveis">
           <div class="linha-nums">
             ${sv.porEpisodiosDoPlano
-              ? `<label><span>Episódios do plano</span>
-                  <input class="num" id="campo-episodios-${sv.id}" type="text" value="${episodiosDoPlano()}" disabled></label>`
+              ? `<label><span>Episódios com cortes</span>
+                  <input class="num" id="campo-episodios-${sv.id}" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${episodiosCortes(s)}"></label>`
               : `<label><span>${sv.meses ? "Episódios por mês" : "Quantidade"}</span>
                   <input class="num" type="number" min="1" step="1" data-campo="qtd" data-id="${sv.id}" value="${s.qtd}"></label>`}
             <label><span>Valor unitário (R$)</span>
@@ -1079,9 +1083,13 @@ elCatalogo.addEventListener("input", (e) => {
   const s = estado.sel[id];
   if(campo === "qtd"){
     s.qtd = Math.max(1, Number(alvo.value)||1);
-    // Mantém o campo somente leitura dos cortes em dia sem re-renderizar o painel
+    if(INDICE[id].sv.porEpisodiosDoPlano) s.qtdEditada = true;
+    // Mantém o campo dos cortes em dia com o plano sem re-renderizar o painel,
+    // só enquanto o usuário não tiver digitado a quantidade dele
     const campoCortes = document.getElementById("campo-episodios-cortes");
-    if(campoCortes) campoCortes.value = episodiosDoPlano();
+    if(campoCortes && id !== "cortes" && !estado.sel["cortes"].qtdEditada && planoAtivo()){
+      campoCortes.value = episodiosDoPlano();
+    }
   }
   else if(campo === "valor"){
     const n = centavosParaNumero(alvo.value);
