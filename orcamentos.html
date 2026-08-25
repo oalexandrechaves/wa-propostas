@@ -724,7 +724,7 @@ const CATALOGO = [
         inclusos:["Gravação de 1h00 por episódio"] },
       { id:"podcast-avulso", nome:"Podcast avulso", valor:597, recorrente:false, unidade:"por episódio", incompat:outros("podcast-avulso"),
         descricao:"Episódio avulso de podcast, ideal para testar o formato antes de fechar um plano recorrente.",
-        inclusos:["1 episódio de 1h00 de gravação"] },
+        inclusos:[] },
       { id:"pacote-26h", nome:"Pacote 26 horas de estúdio", valor:9534, recorrente:false, unidade:"pagamento por uso", incompat:outros("pacote-26h"),
         descricao:"Pacote de 26 horas de estúdio com utilização flexível ao longo de doze meses e pagamento conforme o uso.",
         inclusos:["26 horas de estúdio","Utilização flexível em 12 meses","Pagamento por uso"] },
@@ -1296,6 +1296,24 @@ function renderPreview(){
           <img src="${FOTOS_ESTUDIO.f4}" alt="">
         </div>`
       : "";
+    // Itens listados em chips. Serviços sem nenhum item não recebem o bloco,
+    // para o slide não abrir um vão vazio abaixo da descrição.
+    const chips = (sv.meses
+        ? [`${sv.meses} ${sv.meses===1?"mês":"meses"} de plano`,
+           `${s.qtd} ${Number(s.qtd)===1?"episódio":"episódios"} por mês`,
+           `${episodiosTotais(sv, s)} episódios no total`,
+           `${money(s.valor)} por episódio`]
+        : sv.porEpisodiosDoPlano
+        ? (s.pagamento === "Pagamento único"
+            ? [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} no total`,
+               `${unidadesServico(sv, s) * 8} cortes no total`,
+               "8 cortes por episódio",
+               `${money(s.valor)} por episódio`]
+            : [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} por mês`,
+               `${unidadesServico(sv, s) * 8} cortes por mês`,
+               "8 cortes por episódio",
+               `${money(s.valor)} por episódio`])
+        : sv.inclusos) || [];
     html += `
       <section class="slide claro s-serv${sv.fotosEstudio ? " com-fotos" : ""}" style="--c:${cat.cor}">
         <div class="s-serv-corpo">
@@ -1304,26 +1322,9 @@ function renderPreview(){
             <h2>${esc(sv.nome)}</h2>
             <div class="descricao">${esc(s.descricao)}</div>
             ${sv.horasIncluidas && s.horas > 0 ? `<div class="horas-inc">Inclui ${s.horas} ${s.horas===1?"hora":"horas"} de gravação</div>` : ""}
-            <div class="inclusos">
-              ${(sv.meses
-                  ? [`${sv.meses} ${sv.meses===1?"mês":"meses"} de plano`,
-                     `${s.qtd} ${Number(s.qtd)===1?"episódio":"episódios"} por mês`,
-                     `${episodiosTotais(sv, s)} episódios no total`,
-                     "Gravação de 1h00 por episódio",
-                     `${money(s.valor)} por episódio`]
-                  : sv.porEpisodiosDoPlano
-                  ? (s.pagamento === "Pagamento único"
-                      ? [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} no total`,
-                         `${unidadesServico(sv, s) * 8} cortes no total`,
-                         "8 cortes por episódio",
-                         `${money(s.valor)} por episódio`]
-                      : [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} por mês`,
-                         `${unidadesServico(sv, s) * 8} cortes por mês`,
-                         "8 cortes por episódio",
-                         `${money(s.valor)} por episódio`])
-                  : sv.inclusos
-                ).map(it => `<span class="chip">${esc(it)}</span>`).join("")}
-            </div>
+            ${chips.length ? `<div class="inclusos">
+              ${chips.map(it => `<span class="chip">${esc(it)}</span>`).join("")}
+            </div>` : ""}
           </div>
           ${mosaico}
         </div>
