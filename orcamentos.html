@@ -597,6 +597,17 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
      sistema, quase sempre Carta, então altura travada em mm sobrava no topo de
      uma folha maior e deixava vão branco embaixo. Em percentual acompanha o
      papel de verdade. */
+  /* Sangria de 12mm em volta do slide. O papel do sistema que o iPhone usa é mais
+     largo que o A4 em retrato, então o slide desenhado no tamanho exato da página
+     deixava faixa branca na lateral e o fundo escuro da capa e dos próximos passos
+     parava antes da borda. A sangria é feita com `box-shadow`, que pinta uma faixa
+     da cor do fundo para fora da caixa sem participar do layout:
+     nada é reposicionado, o slide não fica maior que a folha e o motor não reescala
+     nem fragmenta a página. O excedente é aparado pela borda do papel.
+     São duas cópias deslocadas só na horizontal, e não uma moldura de espalhamento
+     nos quatro lados, porque a moldura subia 12mm acima do slide e pintava a cor
+     dele no rodapé da folha anterior. Na vertical não há folga a cobrir: o slide já
+     ocupa 100% da altura da área de página, qualquer que seja o papel. */
   .slide{
     width:297mm;height:100%;
     border-radius:0;box-shadow:none;margin:0;
@@ -604,6 +615,8 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
     break-inside:avoid;page-break-inside:avoid;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
+  .slide.escuro{box-shadow:12mm 0 var(--bg-escuro),-12mm 0 var(--bg-escuro)}
+  .slide.claro{box-shadow:12mm 0 var(--creme),-12mm 0 var(--creme)}
   #deck[data-orient=retrato] .slide{width:210mm}
   .slide:last-child{break-after:auto;page-break-after:avoid}
   .card-cat,.inv-totais .bloco,.slide *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
