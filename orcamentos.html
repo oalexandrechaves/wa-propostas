@@ -570,22 +570,28 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
    O @page é injetado dinamicamente conforme a orientação.
    ========================================================================== */
 @media print{
-  html,body{overflow:visible;background:#fff;height:auto}
+  /* Cadeia de altura cheia até o slide. O `height:100%` de cada nível se resolve
+     contra a caixa de página real que o aparelho estiver usando, então o slide
+     preenche a folha inteira seja qual for o papel. Se algum elo virar `auto`, o
+     percentual do slide degrada para a altura do conteúdo e o fundo escuro fica
+     cortado, com vão branco embaixo. */
+  html,body{overflow:visible;background:#fff;height:100%}
   #painel{display:none !important}
-  #app{display:block;height:auto}
-  #preview{overflow:visible;padding:0;display:block;background:#fff}
-  #sizer{width:auto !important;height:auto !important}
-  #deck-escala{transform:none !important}
+  #app{display:block;height:100%}
+  #preview{overflow:visible;padding:0;display:block;background:#fff;height:100%}
+  #sizer{width:auto !important;height:100% !important}
+  #deck-escala{transform:none !important;height:100%}
   /* O deck é um flex container na tela, e o WebKit do iPhone ignora quebra de
      página em item de flex: o Safari do iOS juntava dois slides na mesma folha
      e cortava os dois no meio. Só no PDF o deck vira bloco, onde a quebra é
-     respeitada por todos os motores. Na tela nada muda.
-     As medidas do slide passam a mm, casadas com o size de cada @page. Em px o
-     slide retrato dava 210,06mm de largura, um fio mais largo que o A4, e essa
-     sobra virava transbordo para a folha seguinte no iOS. */
-  #deck{display:block;gap:0;--slide-larg:297mm;--slide-alt:167mm}
-  #deck[data-orient=retrato]{--slide-larg:210mm;--slide-alt:297mm}
+     respeitada por todos os motores. Na tela nada muda. */
+  #deck{display:block;gap:0;height:100%}
+  /* Medida fixa em mm aqui era o que deixava o vão branco embaixo no iPhone: o
+     iOS ignora o size do @page e imprime no papel do sistema, quase sempre Carta,
+     então um slide de altura travada sobrava no topo de uma folha maior. Em
+     percentual ele acompanha o papel de verdade. */
   .slide{
+    width:100%;height:100%;
     border-radius:0;box-shadow:none;margin:0;
     break-after:page;page-break-after:always;
     break-inside:avoid;page-break-inside:avoid;
