@@ -570,16 +570,25 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
    O @page é injetado dinamicamente conforme a orientação.
    ========================================================================== */
 @media print{
-  html,body{overflow:visible;background:#fff}
+  html,body{overflow:visible;background:#fff;height:auto}
   #painel{display:none !important}
   #app{display:block;height:auto}
   #preview{overflow:visible;padding:0;display:block;background:#fff}
   #sizer{width:auto !important;height:auto !important}
   #deck-escala{transform:none !important}
-  #deck{gap:0}
+  /* O deck é um flex container na tela, e o WebKit do iPhone ignora quebra de
+     página em item de flex: o Safari do iOS juntava dois slides na mesma folha
+     e cortava os dois no meio. Só no PDF o deck vira bloco, onde a quebra é
+     respeitada por todos os motores. Na tela nada muda.
+     As medidas do slide passam a mm, casadas com o size de cada @page. Em px o
+     slide retrato dava 210,06mm de largura, um fio mais largo que o A4, e essa
+     sobra virava transbordo para a folha seguinte no iOS. */
+  #deck{display:block;gap:0;--slide-larg:297mm;--slide-alt:167mm}
+  #deck[data-orient=retrato]{--slide-larg:210mm;--slide-alt:297mm}
   .slide{
     border-radius:0;box-shadow:none;margin:0;
     break-after:page;page-break-after:always;
+    break-inside:avoid;page-break-inside:avoid;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
   .slide:last-child{break-after:auto;page-break-after:avoid}
