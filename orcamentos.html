@@ -1304,15 +1304,8 @@ function renderPreview(){
            `${episodiosTotais(sv, s)} episódios no total`,
            `${money(s.valor)} por episódio`]
         : sv.porEpisodiosDoPlano
-        ? (s.pagamento === "Pagamento único"
-            ? [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} no total`,
-               `${unidadesServico(sv, s) * 8} cortes no total`,
-               "8 cortes por episódio",
-               `${money(s.valor)} por episódio`]
-            : [`${unidadesServico(sv, s)} ${unidadesServico(sv, s)===1?"episódio":"episódios"} por mês`,
-               `${unidadesServico(sv, s) * 8} cortes por mês`,
-               "8 cortes por episódio",
-               `${money(s.valor)} por episódio`])
+        ? [`${unidadesServico(sv, s) * 8} cortes`,
+           `${money(s.valor)} para cada 8 cortes`]
         : sv.inclusos) || [];
     html += `
       <section class="slide claro s-serv${sv.fotosEstudio ? " com-fotos" : ""}" style="--c:${cat.cor}">
