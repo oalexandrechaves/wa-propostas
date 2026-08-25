@@ -585,18 +585,26 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
      página em item de flex: o Safari do iOS juntava dois slides na mesma folha
      e cortava os dois no meio. Só no PDF o deck vira bloco, onde a quebra é
      respeitada por todos os motores. Na tela nada muda. */
-  #deck{display:block;gap:0;height:100%}
-  /* Medida fixa em mm aqui era o que deixava o vão branco embaixo no iPhone: o
-     iOS ignora o size do @page e imprime no papel do sistema, quase sempre Carta,
-     então um slide de altura travada sobrava no topo de uma folha maior. Em
-     percentual ele acompanha o papel de verdade. */
+  #deck{display:block;gap:0;height:100%;width:297mm}
+  #deck[data-orient=retrato]{width:210mm}
+  /* Largura e altura têm origens diferentes de propósito, cada uma resolve um
+     defeito do iPhone.
+     Largura fixa em mm: com `width:100%` o Safari do iOS monta o slide na largura
+     da viewport do aparelho, uns 390px por causa do `width=device-width`, e o PDF
+     sai com o título quebrando palavra por palavra e o fundo virando uma faixa
+     estreita. Em mm o layout é sempre o da folha, venha de onde vier a tela.
+     Altura em percentual: o iOS ignora o size do @page e imprime no papel do
+     sistema, quase sempre Carta, então altura travada em mm sobrava no topo de
+     uma folha maior e deixava vão branco embaixo. Em percentual acompanha o
+     papel de verdade. */
   .slide{
-    width:100%;height:100%;
+    width:297mm;height:100%;
     border-radius:0;box-shadow:none;margin:0;
     break-after:page;page-break-after:always;
     break-inside:avoid;page-break-inside:avoid;
     -webkit-print-color-adjust:exact;print-color-adjust:exact;
   }
+  #deck[data-orient=retrato] .slide{width:210mm}
   .slide:last-child{break-after:auto;page-break-after:avoid}
   .card-cat,.inv-totais .bloco,.slide *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   /* Na impressão, o desfoque das sombras dos cards da visão geral e dos balões
