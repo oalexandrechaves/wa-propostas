@@ -255,6 +255,17 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 #gerar:hover{filter:brightness(1.08)}
 #gerar:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4)}
 #gerar-nota{font-size:12px;color:var(--alerta);margin-top:8px;text-align:center;min-height:16px}
+/* Só aparece quando o navegador engole o pedido de impressão, hoje o caso do
+   Chrome e do Firefox no iPhone. */
+#gerar-ajuda{
+  margin-top:12px;
+  font-size:12.5px;line-height:1.5;
+  border:1px solid var(--alerta);border-radius:10px;
+  background:rgba(255,176,32,.1);color:#FFD98A;
+  padding:12px 14px;
+}
+#gerar-ajuda b{display:block;margin-bottom:6px;color:var(--branco);font-size:13px}
+#gerar-ajuda ol{margin:8px 0 0 16px;display:flex;flex-direction:column;gap:5px}
 
 /* --------------------------------------------------------------------------
    Preview
@@ -714,6 +725,7 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 
     <button id="gerar" disabled>Gerar PDF</button>
     <div id="gerar-nota"></div>
+    <div id="gerar-ajuda" hidden></div>
   </aside>
 
   <!-- ===================== Preview ao vivo ===================== -->
@@ -1195,6 +1207,7 @@ document.getElementById("orient").addEventListener("click", (e) => {
   document.getElementById("deck").dataset.orient = estado.orientacao;
   renderPreview();
   ajustarEscala();
+  definirPagina();
 });
 
 // Recalcula tudo depois de mudança estrutural (seleção).
@@ -1478,18 +1491,74 @@ function definirPagina(){
   estiloImpressao.textContent = regra;
 }
 
-document.getElementById("gerar").addEventListener("click", () => {
-  definirPagina();
-  const antes = document.title;
+const tituloOriginal = document.title;
+
+// O nome do arquivo sugerido no diálogo vem do title do documento.
+function aplicarTituloArquivo(){
   const cliente = document.getElementById("c-nome").value.trim();
   const dataIso = document.getElementById("c-data").value || iso;
-  // O nome do arquivo sugerido no diálogo vem do title do documento
   document.title = `Proposta-${kebab(cliente)}-${dataIso}`;
-  window.addEventListener("afterprint", function volta(){
-    document.title = antes;
-    window.removeEventListener("afterprint", volta);
-  });
-  window.print();
+}
+
+const ajuda = document.getElementById("gerar-ajuda");
+
+/* No iPhone e no iPad o único navegador que abre a impressão a partir de
+   `window.print()` é o Safari. No Chrome, no Firefox e no Edge do iOS a chamada
+   existe e simplesmente não faz nada, porque o sistema só libera a impressão
+   pelo caminho nativo de Compartilhar. Por isso a regra de página e o título do
+   arquivo não podem depender do clique no botão: eles são preparados desde o
+   arranque e a cada troca de orientação, e reaplicados no `beforeprint`. Assim
+   a impressão disparada pelo menu do navegador, pelo Ctrl+P ou pelo Compartilhar
+   do celular sai com o mesmo tamanho de página e o mesmo nome de arquivo que
+   sairia pelo botão. */
+window.addEventListener("beforeprint", () => {
+  definirPagina();
+  aplicarTituloArquivo();
+});
+window.addEventListener("afterprint", () => {
+  document.title = tituloOriginal;
+  ajuda.hidden = true;
+});
+
+ajuda.innerHTML = `<b>Este navegador não abriu a tela de impressão.</b>
+  No iPhone e no iPad só o Safari consegue abrir a impressão por um botão da
+  página, é limitação do próprio sistema. O orçamento já está pronto e não se
+  perde nada, o caminho é outro:
+  <ol>
+    <li>Abra o menu do navegador e toque em Compartilhar.</li>
+    <li>Escolha Imprimir.</li>
+    <li>Na prévia, afaste dois dedos sobre a folha para abrir o PDF e use
+        Salvar em Arquivos ou envie direto pelo WhatsApp.</li>
+  </ol>`;
+
+document.getElementById("gerar").addEventListener("click", () => {
+  definirPagina();
+  aplicarTituloArquivo();
+
+  /* Não dá para perguntar ao navegador se ele sabe imprimir: a função existe em
+     todos eles. Só dá para observar se alguma coisa aconteceu. Qualquer um dos
+     três sinais serve como prova de que a tela de impressão subiu, e o que não
+     apresentar nenhum deles em um segundo e meio é tratado como falha. */
+  let abriu = false;
+  const marcar = () => { abriu = true; };
+  window.addEventListener("beforeprint", marcar, { once:true });
+  window.addEventListener("blur", marcar, { once:true });
+  document.addEventListener("visibilitychange", marcar, { once:true });
+
+  try { window.print(); } catch(e) { /* segue para a checagem abaixo */ }
+
+  setTimeout(() => {
+    window.removeEventListener("beforeprint", marcar);
+    window.removeEventListener("blur", marcar);
+    document.removeEventListener("visibilitychange", marcar);
+    if(abriu){
+      ajuda.hidden = true;
+    } else {
+      document.title = tituloOriginal;
+      ajuda.hidden = false;
+      ajuda.scrollIntoView({ block:"nearest", behavior:"smooth" });
+    }
+  }, 1500);
 });
 
 /* ==========================================================================
@@ -1499,6 +1568,7 @@ renderCatalogo();
 aplicarRegrasEStatus();
 renderPreview();
 ajustarEscala();
+definirPagina();
 </script>
 </body>
 </html>
