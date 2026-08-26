@@ -566,6 +566,39 @@ input.num,input.moeda{padding:8px 10px;font-size:13px}
 .vazio h3{font-family:var(--fonte-display);font-weight:700;font-size:22px;color:var(--texto-claro);margin-bottom:10px}
 
 /* ==========================================================================
+   Tela estreita: as duas colunas viram uma pilha
+   Só na tela, o bloco de impressão mais abaixo não é afetado.
+   O painel tinha largura fixa de 440px dentro de um grid de 100vw, então num
+   celular de 390px a coluna estourava a viewport, o conteúdo era cortado nas
+   laterais e não havia rolagem para alcançar o que ficava de fora.
+   ========================================================================== */
+@media screen and (max-width:900px){
+  /* Na tela larga o corpo não rola: cada coluna tem a própria rolagem interna.
+     Empilhado isso não serve, quem rola passa a ser a página inteira. */
+  html{overflow-x:hidden}
+  html,body{height:auto;min-height:100%}
+  body{overflow:visible}
+  #app{
+    grid-template-columns:100%;
+    width:100%;height:auto;min-height:100vh;
+  }
+  #painel{
+    width:100%;max-width:100%;
+    border-right:none;border-bottom:1px solid var(--linha);
+    overflow-y:visible;
+    padding:22px 16px 34px;
+  }
+  #preview{
+    overflow:visible;
+    padding:22px 12px 44px;
+  }
+  /* Os dois campos numéricos lado a lado precisam poder encolher: sem
+     `min-width:0` o item de flex nunca fica menor que a largura natural do
+     input e os dois juntos passam da largura da coluna. */
+  .editaveis .linha-nums label{min-width:0}
+}
+
+/* ==========================================================================
    Impressão: PDF vetorial por window.print
    O @page é injetado dinamicamente conforme a orientação.
    ========================================================================== */
